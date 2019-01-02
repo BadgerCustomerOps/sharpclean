@@ -121,9 +121,7 @@ namespace sharpclean
                 pixels[i].found = false;
             }
 
-            mdata.buffersize = buffer.Length;
-
-            Console.WriteLine(mdata.buffersize);
+            
         }
 
         public void printmenu()
