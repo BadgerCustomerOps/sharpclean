@@ -8,6 +8,8 @@ namespace sharpclean
 {
     class toolbox
     {
+        public readonly int COLOR_CLEAR = 255;
+
         public toolbox(pixel[] p, int width, int total)
         {
             pixels = p;
@@ -56,16 +58,17 @@ namespace sharpclean
             {
                 if (s.get(i))
                 {
-                    buffer = s.getBuffer();
-                    perimeter = s.getPerimeter();
+                    buffer = s.Buffer;
+                    perimeter = s.Perimeter;
                     data[1] = buffer.Count;
                     data[2] = data[1] / s.getEdges();
                     data[0] = getAverageValue(Convert.ToInt32(data[1]));
+
                     conf c = confidence.getconfidence(data);
 
                     if (!c.isObj)
-                        colorbuffer(150, Convert.ToInt32(data[1]));
-                    
+                        colorbuffer(COLOR_CLEAR, Convert.ToInt32(data[1]));
+
                     if (writeData)
                         printcsv(ref c);
                 }
@@ -101,9 +104,9 @@ namespace sharpclean
         }
 
         //colors the edges of a selection of pixels
-        private void coloredges(byte color, int sizeofbuffer)
+        private void coloredges(int color, int sizeofperimeter)
         {
-            for (int i = 0; i < sizeofbuffer; i++)
+            for (int i = 0; i < sizeofperimeter; i++)
                 pixels[perimeter[i]].value = Convert.ToByte(color);
         }
 
