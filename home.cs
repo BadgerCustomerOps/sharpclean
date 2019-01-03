@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+/*
 namespace sharpclean
 {
     class main
@@ -130,3 +130,4 @@ namespace sharpclean
         private readonly string home_err = "::HOME::error : ";
     }
 }
+*/
