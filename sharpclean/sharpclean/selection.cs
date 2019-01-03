@@ -9,6 +9,8 @@ namespace sharpclean
     class selection
     {
         public const byte VALUE_THRESHOLD = 255;
+        public readonly int MAX_OBJECT_SIZE_ESTIMATE = 2700;    //if an object is bigger than this ignore it -- optimization thing
+
         selection()
         {
             Console.Write(selection_err + "initialized without pixels\n");
@@ -26,11 +28,11 @@ namespace sharpclean
 
         public bool get(int i)
         {
-	        if (checkPixel(ref pixels[i], VALUE_THRESHOLD))
+	        if (checkPixel(ref pixels[i]))
 	        {
-		        iterate(VALUE_THRESHOLD);
+		        iterate();
 
-		        if (bufferSize > 0 && bufferSize< 2700)
+		        if (bufferSize > 0 && bufferSize < MAX_OBJECT_SIZE_ESTIMATE)
 		        {
 			        fillPixels();
                     findEdges();
@@ -40,46 +42,44 @@ namespace sharpclean
 	        return false;
         }
 
-
-
-        private void iterate(int value)
+        private void iterate()
         {
-            for (int i = 0; i < bufferSize - 1; i++)
-                nextPixel(buffer[i], value);
+            for (int i = 0; i < bufferSize; i++)
+                nextPixel(buffer[i]);
         }
 
-        private void nextPixel(long i, int value)
+        private void nextPixel(long i)
         {
             if ((i - width - 1) > 0)
             {
-                checkPixel(ref pixels[i - width - 1], value);   //top left
-                checkPixel(ref pixels[i - width], value);       //top center
-                checkPixel(ref pixels[i - width + 1], value);   //top right
+                checkPixel(ref pixels[i - width - 1]);   //top left
+                checkPixel(ref pixels[i - width]);       //top center
+                checkPixel(ref pixels[i - width + 1]);   //top right
             }
 
             if (i % width != 0)
-                checkPixel(ref pixels[i - 1], value);   //center left
+                checkPixel(ref pixels[i - 1]);   //center left
             if (i % (width + 1) != 0)
-                checkPixel(ref pixels[i + 1], value);   //center right
+                checkPixel(ref pixels[i + 1]);   //center right
 
             if ((i + width + 1) < total)
             {
-                checkPixel(ref pixels[i + width - 1], value);   //bottom left
-                checkPixel(ref pixels[i + width], value);       //bottom center
-                checkPixel(ref pixels[i + width + 1], value);   //bottom right
+                checkPixel(ref pixels[i + width - 1]);   //bottom left
+                checkPixel(ref pixels[i + width]);       //bottom center
+                checkPixel(ref pixels[i + width + 1]);   //bottom right
             }
         }
 
-        private bool checkPixel(ref pixel p, int value)
+        private bool checkPixel(ref pixel p)
         {
-            if (p.value < value)
+            if (p.value < VALUE_THRESHOLD)
             {
                 if (!p.selected)
                 {
                     buffer.Add(p.id);
                     p.selected = true;
                     bufferSize++;
-                    tree.insert(buff, p.id);
+                    tree.insert(ref buff, p.id);
                     return true;
                 }
             }
@@ -100,13 +100,10 @@ namespace sharpclean
                     List<pathDirection> whitePixels = fill.getPath();
                     if (whitePixels.Count != 0)
                     {
-                        //j once was i, not sure how this wasn't an issue in c++
-                        //but reassigning i here may have slowed things down a lot
-
                         for (int j = 0; j < whitePixels.Count; j++)
                         {
                             buffer.Add(whitePixels[j].id);
-                            tree.insert(buff, whitePixels[j].id);
+                            tree.insert(ref buff, whitePixels[j].id);
                             count++;
                         }
                     }
@@ -124,15 +121,9 @@ namespace sharpclean
             numEdges = e.getEdges();
         }
 
-        public ref List<int> getBuffer()
-        {
-	        return ref buffer;
-        }
+        public ref List<int> Buffer => ref buffer;
 
-        public ref List<int>  getPerimeter()
-        {
-	        return ref perimeter;
-        }
+        public ref List<int> Perimeter => ref perimeter;
 
         public int getEdges()
         {

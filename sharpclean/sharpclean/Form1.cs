@@ -89,7 +89,7 @@ namespace sharpclean
                 // Load the image
                 if (img.load(pgmPath))
                 {
-                    tBox = new toolbox(img.getpixels(), img.getImageData().width, img.getImageData().height);
+                    tBox = new toolbox(img.getpixels(), img.getImageData().width, img.getImageData().totalpixels);
                 }
 
                 // Make the Clean Map button clickable
@@ -100,7 +100,13 @@ namespace sharpclean
 
         private void button2_Click(object sender, EventArgs e) // Cleans the map
         {
-            MessageBox.Show("This cleans the map, replace this with actual code!");
+            if (tBox != null)
+            {
+                tBox.clean();
+                MessageBox.Show("Cleaning is done!", "Clean done", 0);
+            }
+            else
+                MessageBox.Show("Toolbox was not loaded!", "Toolbox not loaded", 0);
         }
 
         private void button3_Click(object sender, EventArgs e) // Saves the file

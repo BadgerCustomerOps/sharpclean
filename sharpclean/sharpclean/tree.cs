@@ -16,7 +16,7 @@ namespace sharpclean
 
     public static class tree
     {
-        public static bool insert(node n, int i)
+        public static bool insert(ref node n, int i)
         {
             if (n == null)
             {
@@ -80,7 +80,7 @@ namespace sharpclean
             List<tup> stack = new List<tup>();
             int m, s, e;
             m = (0 + v.Count - 1) / 2;
-            insert(r, v[m]);
+            insert(ref r, v[m]);
             tup right = new tup(m + 1, v.Count);
             tup left = new tup(0, m);
             stack.Add(right);
@@ -93,7 +93,7 @@ namespace sharpclean
                 if (s < e)
                 {
                     m = (s + e) / 2;
-                    insert(r, v[m]);
+                    insert(ref r, v[m]);
                     right.change(m + 1, v.Count);
                     left.change(0, m);
                     stack.Add(right);
@@ -120,46 +120,5 @@ namespace sharpclean
             }
             n = r;
         }
-
-        /*
-        void Tree::print(node*& n)
-        {
-	        if (n == null) return;
-	        print(n.left);
-	        std::cout << n.id << " ";
-	        print(n.right);
-        }
-
-        int Tree::total(node*& n)
-        {
-	        if (n == null) return 0;
-	        int lt = total(n.left);
-	        int rt = total(n.right);
-	        return rt + lt + 1;
-        }
-
-        int tree::get(node * n, pixel& c)
-        {
-	        switch (c) {
-	        case 1: return height(n);
-	        case 2: return min(n);
-	        case 3: return max(n);
-	        case 4: return total(n);
-	        }
-	        return -1;
-        }
-
-        int tree::min(node* n)
-        {
-	        if (n.left != null) return min(n.left);
-	        return n.data[0];
-        }
-
-        int tree::max(node* n)
-        {
-	        if (n.right != null) return max(n.right);
-	        return n.data[0];
-        }
-        */
     }
 }

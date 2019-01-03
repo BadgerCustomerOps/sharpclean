@@ -12,7 +12,6 @@ namespace sharpclean
         {
             home m_h = new home();
             m_h.run();
-
             return 0;
         }
     }
@@ -29,7 +28,6 @@ namespace sharpclean
                 else
                     fullmenu();
             }
-
             deleteimage();
         }
 
@@ -37,14 +35,13 @@ namespace sharpclean
         private void startmenu()
         {
             int n = 0;
-
             if (cmd.getcmd("[1]load - ", ref n, 0))
             {
                 if (n == 1)
                     loadfile();
                 else
                     System.Console.WriteLine(home_err + "invalid command\n");
-            }       
+            }
             else
                 good = false;
         }
@@ -53,7 +50,6 @@ namespace sharpclean
         private void fullmenu()
         {
             int n = 0;
-
             if (cmd.getcmd("[1]load, [2]save, [3]print menu, [4]clean [q]quit - ", ref n, 0))
             {
                 switch (n)
@@ -86,7 +82,6 @@ namespace sharpclean
         {
             string f = "";
             int n = 0;
-
             if (img != null)
             {
                 if (cmd.getcmd("delete loaded image? [1]yes, [q]quit - ", ref n, 1))
@@ -111,7 +106,6 @@ namespace sharpclean
             if (img != null)
             {
                 string f = "";
-
                 if (cmd.getfile("enter file name : ", ref f, ".pgm", 1))
                 {
                     f = "saves/" + f;
@@ -125,9 +119,7 @@ namespace sharpclean
         //if toolbox is set up give it up then give up the loaded image
         private void deleteimage()
         {
-            if (t != null)
-                t = null;
-
+            t = null;
             img = null;
         }
 

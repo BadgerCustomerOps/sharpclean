@@ -8,8 +8,7 @@ namespace sharpclean
 {
     class edge
     {
-        edge()
-        {
+        edge() {
             Console.WriteLine(edge_warn + "edge initialized with no pixels\n");
         }
 
@@ -28,35 +27,16 @@ namespace sharpclean
 
         public void detect(List<int> mselection, node buff)
         {
-            /*
-            node * temp = NULL;
-            std::vector<int> balance;
-            for (int i = 0; i < size; i++)
-                Tree::insert(temp, selection[i]);
-
-            Tree::getInOrder(temp, balance);
-
-            Tree::deleteTree(temp);
-                      
-            Tree::buildTree(balance, sel);
-            */
-
             sel = buff;
             stack.Add(mselection[0]);
             perimeter.Add(mselection[0]);
-            tree.insert(per, mselection[0]);
+            tree.insert(ref per, mselection[0]);
             perimSize++;
             numEdges++;
             iterateEdges();
 
-            //Tree::deleteTree(sel);
-
-            //Tree::deleteTree(per);
-
             per = null;
             sel = null;
-
-            //std::cout << numEdges << "\n";
         }
 
         private void iterateEdges()
@@ -115,9 +95,9 @@ namespace sharpclean
 
         private void check(int p, int p1, int p2, int mneighbor)
         {
-            if (p == -1 && !(p1 == -1 && p2 == -1))
+            if (p != -1 && !(p1 != -1 && p2 != -1))
             {
-                if (tree.insert(per, p))
+                if (tree.insert(ref per, p))
                 {
                     stack.Add(p);
                     perimeter.Add(p);
@@ -156,6 +136,7 @@ namespace sharpclean
                 field[n.br] = 1;
                 fieldSet = true;
             }
+
             else if (mneighbor == n.l || mneighbor == n.r)
             { //horizontal
                 field[n.tl] = -1;

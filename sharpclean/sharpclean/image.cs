@@ -12,53 +12,46 @@ namespace sharpclean
         public bool load(string filename)
         {
             System.IO.StreamReader infile = null;
-            try
-            {
+            try {
                 infile = new System.IO.StreamReader(filename, Encoding.UTF7);
             }
-
-            catch (System.IO.FileNotFoundException)
-            {
+            catch (System.IO.FileNotFoundException) {
                 Console.WriteLine(image_err + "could not open file: " + filename + "\n");
                 return false;
             }
+
             //first line is always version
             mdata.filetype = infile.ReadLine().Substring(0, 2);
-            Console.WriteLine(mdata.filetype);
-            if (!(mdata.filetype != "P5" || mdata.filetype != "P2"))
-            {
+            if (!(mdata.filetype != "P5" || mdata.filetype != "P2")) {
                 Console.WriteLine(image_err + "invalid file type: " + mdata.filetype + "\n");
                 return false;
             }
+
             //ignore comments
             string comments = "";
-            while (true)
-            {
+            while (true) {
                 comments = infile.ReadLine();
-                Console.WriteLine(comments);
                 if (comments[0] != '#') break;
             }
+
             //get width, height, and total
             string[] ss = comments.Split();
-            Console.WriteLine(ss[0] + "," + ss[1]);
             mdata.width = int.Parse(ss[0]);
             mdata.height = int.Parse(ss[1]);
             mdata.totalpixels = mdata.width * mdata.height;
-            Console.WriteLine(mdata.totalpixels);
             
             //get maximum grey value in file
             mdata.maxgreyval = Convert.ToInt16(infile.ReadLine());
-            Console.WriteLine(mdata.maxgreyval);
 
             //get image data
             if (mdata.filetype == "P2") loadP2(infile);
             else loadP5(infile);
 
-            // Close the file
-            infile.Close();
-
             Console.WriteLine("successfully loaded...\n");
             dataLoaded = true;
+
+            infile.Close();
+
             return true;
         }
 
@@ -73,30 +66,26 @@ namespace sharpclean
             {
                 StreamWriter p2write = new StreamWriter(filename, false);
 
-                Console.WriteLine("P2 Writing");
                 p2write.Write(mdata.filetype + "\n" + "# Created by Sharp Clean Software\n" + mdata.width + " " + mdata.height + "\n" + mdata.maxgreyval + "\n");
 
                 for (int i = 0; i < mdata.totalpixels; i++)
                     p2write.WriteLine(Convert.ToString(pixels[i].value));
 
-                // Close the stream
                 p2write.Close();
             }
             else
             {
                 StreamWriter p5write = new StreamWriter(filename, false, Encoding.Default);
 
-                Console.WriteLine("P5 Writing");
                 p5write.Write(mdata.filetype + "\n# Created by Sharp Clean Software\n" + mdata.width + " " + mdata.height + "\n" + mdata.maxgreyval + "\n");
 
                 for (int i = 0; i < mdata.totalpixels; i++)
                     p5write.Write(Convert.ToChar(pixels[i].value));
 
                 p5write.Flush();
-
-                // Close the stream
                 p5write.Close();
             }
+
         }
         private void loadP2(System.IO.StreamReader f)
         {
@@ -128,8 +117,6 @@ namespace sharpclean
                 pixels[i].selected = false;
                 pixels[i].found = false;
             }
-
-            
         }
 
         public void printmenu()
