@@ -5,3 +5,10 @@ C:\Users\100057822\source\repos\sharpclean\sharpclean\obj\Debug\sharpclean.cspro
 C:\Users\100057822\source\repos\sharpclean\sharpclean\obj\Debug\sharpclean.exe
 C:\Users\100057822\source\repos\sharpclean\sharpclean\obj\Debug\sharpclean.pdb
 C:\Users\100057822\source\repos\sharpclean\sharpclean\obj\Debug\sharpclean.csprojAssemblyReference.cache
+C:\Users\100057822\Documents\GitHub\sharpclean\bin\Debug\sharpclean.exe.config
+C:\Users\100057822\Documents\GitHub\sharpclean\bin\Debug\sharpclean.exe
+C:\Users\100057822\Documents\GitHub\sharpclean\bin\Debug\sharpclean.pdb
+C:\Users\100057822\Documents\GitHub\sharpclean\obj\Debug\sharpclean.csprojAssemblyReference.cache
+C:\Users\100057822\Documents\GitHub\sharpclean\obj\Debug\sharpclean.csproj.CoreCompileInputs.cache
+C:\Users\100057822\Documents\GitHub\sharpclean\obj\Debug\sharpclean.exe
+C:\Users\100057822\Documents\GitHub\sharpclean\obj\Debug\sharpclean.pdb
