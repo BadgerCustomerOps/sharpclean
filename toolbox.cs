@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace sharpclean
 {
@@ -11,39 +10,36 @@ namespace sharpclean
     {
         public readonly int COLOR_CLEAR = 255; // color that the buffer will be 'painted' with
 
-        public toolbox(pixel[] p, int width, int total) 
+        public toolbox(pixel[] p, int width, int total)
         {
             pixels = p;
             imageWidth = width;
             totalPixels = total;
         }
 
-        //gets some info for saving data, then taps run()
-        public void clean(ProgressBar progressBar1)
+        // get some info for saving data, then tap run()
+        public void clean()
         {
-            if (pixels == null)
-            {
-                MessageBox.Show("No Pixels Loaded", "no pixels", 0);
+            if (pixels == null) {
+                Console.WriteLine(toolbox_err + "no pixels loaded\n");
                 return;
             }
 
-            // confidence data can be written to an excel sheet
-            // this gets the file name you want to use if you choose to do so
-            /*
             int n = 0;
             ofilename = "none";
+
+            // confidence data can be written to an excel sheet
+            // this gets the file name you want to use if you choose to do so
             if (cmd.getcmd("write data to .csv file? [1]yes, [2]no, [q]quit - ", ref n, 2))
             {
                 if (n == 1)
                     cmd.getfile("enter data output file name : ", ref ofilename, ".csv", 2);
                 run();
             }
-            */
-            run(progressBar1);
         }
 
-        // the big boy, iterates through each pixel and drives algorithms to clean the raster
-        private void run(ProgressBar progressBar1)
+        //the big boy, iterates through each pixel and drives algorithms to clean the raster
+        private void run()
         {
             // watch is for speedtests | per_xx is to print percentage done as the program runs | b_xx helps with the percentage thing | writeData is for the .csv stuff
             System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
@@ -51,8 +47,8 @@ namespace sharpclean
             int per_50 = totalPixels / 2;
             int per_75 = per_25 + per_50;
             bool b_25 = false, b_50 = false, b_75 = false;
-            /*
             bool writeData = false;
+
             if (ofilename != "none") // if a .csv filename was given
             {
                 ofilename = "data/" + ofilename;
@@ -61,7 +57,7 @@ namespace sharpclean
                 System.IO.File.WriteAllText(ofilename, "val, size, edge, dust, obj, res, type, c avg, c edge, c size\n");
                 writeData = true;
             }
-            */
+
             selection s = new selection(pixels, imageWidth, totalPixels); // selection class 'selects' an object that it finds in the image
 
             watch.Start(); // start time
@@ -82,29 +78,27 @@ namespace sharpclean
                     if (!c.isObj)
                         colorbuffer(COLOR_CLEAR, Convert.ToInt32(data[1])); // if it's not an object, get rid of it
 
-                    //if (writeData)  // if we're writing to a csv, do that
-                        //printcsv(ref c);
+                    if (writeData)  // if we're writing to a csv, do that
+                        printcsv(ref c);
                 }
+
                 // clear the selection and clear the toolbox buffer
                 s.clearBuffer();
                 buffer.Clear();
 
                 // display percentage done based off what pixel we're on
-                if (i > per_25 && !b_25)
-                {
-                    progressBar1.Value = 25;
+                if (i > per_25 && !b_25) {
+                    Console.WriteLine("25%...\n");
                     b_25 = true;
                 }
 
-                if (i > per_50 && !b_50)
-                {
-                    progressBar1.Value = 50;
+                if (i > per_50 && !b_50) {
+                    Console.WriteLine("50%...\n");
                     b_50 = true;
                 }
 
-                if (i > per_75 && !b_75)
-                {
-                    progressBar1.Value = 75;
+                if (i > per_75 && !b_75) {
+                    Console.WriteLine("75%...\n");
                     b_75 = true;
                 }
             }
@@ -127,7 +121,6 @@ namespace sharpclean
         }
 
         //writes some data to a csv, if the user wants
-        /*
         private void printcsv(ref conf c)
         {
             System.IO.File.WriteAllText(ofilename, data[0] + "," + data[1] + "," + data[2] + "," + c.dust + "," + c.obj + ",");
@@ -136,7 +129,7 @@ namespace sharpclean
             else
                 System.IO.File.WriteAllText(ofilename, (c.dust - c.obj) + ",dust," + (c.d_val - c.o_val) + "," + (c.d_edge - c.o_edge) + "," + (c.d_size - c.o_size) + "\n");
         }
-        */
+
         //gets some data on the selection
         private double getAverageValue(int sizeofbuffer)
         {
@@ -152,7 +145,7 @@ namespace sharpclean
         private List<int> buffer = new List<int>(); // buffer of selected pixels (an object)
         private List<int> perimeter = new List<int>(); // pixels on the perimeter of the object
         private double[] data = new double[3]; // [0] average value | [1] size | [2] edge to size ratio
-        //private string ofilename;
-        //private readonly string toolbox_err = "::TOOLBOX::error : ";
+        private string ofilename;
+        private readonly string toolbox_err = "::TOOLBOX::error : ";
     }
 }

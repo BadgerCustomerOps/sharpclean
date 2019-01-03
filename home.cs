@@ -3,42 +3,42 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-/*
+
 namespace sharpclean
 {
     class main
     {
-        static int Main(string[] args)
+        static int Main(string[] args)  // program starts
         {
-            home m_h = new home();
-            m_h.run();
+            home m_h = new home(); 
+            m_h.run();  // tap run
             return 0;
         }
     }
 
     class home
     {
-        //enter here
+        // enter here
         public void run()
         {
             while (good)
             {
-                if (img == null)
+                if (img == null)    // if image not loaded, don't display full menu options
                     startmenu();
                 else
-                    fullmenu();
+                    fullmenu();     // image is loaded, display full menu
             }
             deleteimage();
         }
 
-        //initial menu when no image is loaded
+        // initial menu when no image is loaded
         private void startmenu()
         {
             int n = 0;
-            if (cmd.getcmd("[1]load - ", ref n, 0))
-            {
+            if (cmd.getcmd("[1]load - ", ref n, 0)) // prompt user to load an image with a file name
+            {                                       // getcmd returns true if the command was valid. ref n is the actual command
                 if (n == 1)
-                    loadfile();
+                    loadfile(); // user chose [1]
                 else
                     System.Console.WriteLine(home_err + "invalid command\n");
             }
@@ -49,7 +49,7 @@ namespace sharpclean
         //menu with all options, only when image is loaded
         private void fullmenu()
         {
-            int n = 0;
+            int n = 0;  // display full menu, get users choice
             if (cmd.getcmd("[1]load, [2]save, [3]print menu, [4]clean [q]quit - ", ref n, 0))
             {
                 switch (n)
@@ -77,7 +77,7 @@ namespace sharpclean
             else good = false;
         }
 
-        //loads a pgm
+        //load a pgm
         private void loadfile()
         {
             string f = "";
@@ -100,7 +100,7 @@ namespace sharpclean
             }
         }
 
-        //writes to a pgm
+        //write to a pgm
         private void writefile()
         {
             if (img != null)
@@ -123,11 +123,10 @@ namespace sharpclean
             img = null;
         }
 
-        private bool good = true;
-        private command cmd = new command();
-        toolbox t = null;
-        image img = null;
+        private bool    good = true;
+        private command cmd  = new command();
+        private toolbox t    = null;
+        private image   img  = null;
         private readonly string home_err = "::HOME::error : ";
     }
 }
-*/
