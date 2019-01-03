@@ -107,6 +107,8 @@
             this.progressBar1.Size = new System.Drawing.Size(100, 30);
             this.progressBar1.TabIndex = 5;
             this.progressBar1.Visible = false;
+            this.progressBar1.Minimum = 0;
+            this.progressBar1.Maximum = 100;
             // 
             // label1
             // 

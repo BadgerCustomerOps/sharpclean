@@ -8,6 +8,7 @@ using System.IO;
 using ImageMagick;
 using System.Drawing;
 
+
 namespace sharpclean
 {
     // Handles file operations for the program, including opening and saving images, locating paths, and user interfacing

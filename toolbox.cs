@@ -19,7 +19,7 @@ namespace sharpclean
         }
 
         //gets some info for saving data, then taps run()
-        public void clean()
+        public void clean(ProgressBar progressBar1)
         {
             if (pixels == null)
             {
@@ -36,14 +36,13 @@ namespace sharpclean
                 run();
             }
             */
-            run();
+            run(progressBar1);
         }
 
         //the big boy, iterates through the pixels and drives algorithms
-        private void run()
+        private void run(ProgressBar progressBar1)
         {
             System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
-            Console.WriteLine(totalPixels);
             int per_25 = totalPixels / 4;
             int per_50 = totalPixels / 2;
             int per_75 = per_25 + per_50;
@@ -81,19 +80,19 @@ namespace sharpclean
                 buffer.Clear();
                 if (i > per_25 && !b_25)
                 {
-                    Console.WriteLine("25%...\n");
+                    progressBar1.Value = 25;
                     b_25 = true;
                 }
 
                 if (i > per_50 && !b_50)
                 {
-                    Console.WriteLine("50%...\n");
+                    progressBar1.Value = 50;
                     b_50 = true;
                 }
 
                 if (i > per_75 && !b_75)
                 {
-                    Console.WriteLine("75%...\n");
+                    progressBar1.Value = 75;
                     b_75 = true;
                 }
             }

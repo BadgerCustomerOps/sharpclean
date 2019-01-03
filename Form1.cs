@@ -44,6 +44,8 @@ namespace sharpclean
         // This is the button click to save the file paths and load the image into the picture box
         private void button1_Click(object sender, EventArgs e)
         {
+            progressBar1.Visible = false;
+            label1.Visible = false;
             // Assign map path by bringing up file dialog
             this.mapPath = this.mapCleanup.getImage();
 
@@ -93,15 +95,21 @@ namespace sharpclean
                 }
 
                 // Make the Clean Map button clickable
+                label1.Visible = true;
+                progressBar1.Visible = true;
+                progressBar1.Value = 0;
                 button2.Enabled = true; // Clean Map Button
+                
             }
         }
 
         private void button2_Click(object sender, EventArgs e) // Cleans the map
         {
+            
             if (tBox != null)
             {
-                tBox.clean();
+                tBox.clean(progressBar1);
+                progressBar1.Value = 100;
                 MessageBox.Show("Cleaning is done!", "Clean done", 0);
                 button3.Enabled = true; // Save Map Button
             }
