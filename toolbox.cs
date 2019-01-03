@@ -9,9 +9,9 @@ namespace sharpclean
 {
     class toolbox
     {
-        public readonly int COLOR_CLEAR = 255;
+        public readonly int COLOR_CLEAR = 255; // color that the buffer will be 'painted' with
 
-        public toolbox(pixel[] p, int width, int total)
+        public toolbox(pixel[] p, int width, int total) 
         {
             pixels = p;
             imageWidth = width;
@@ -26,6 +26,9 @@ namespace sharpclean
                 MessageBox.Show("No Pixels Loaded", "no pixels", 0);
                 return;
             }
+
+            // confidence data can be written to an excel sheet
+            // this gets the file name you want to use if you choose to do so
             /*
             int n = 0;
             ofilename = "none";
@@ -39,9 +42,10 @@ namespace sharpclean
             run(progressBar1);
         }
 
-        //the big boy, iterates through the pixels and drives algorithms
+        // the big boy, iterates through each pixel and drives algorithms to clean the raster
         private void run(ProgressBar progressBar1)
         {
+            // watch is for speedtests | per_xx is to print percentage done as the program runs | b_xx helps with the percentage thing | writeData is for the .csv stuff
             System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
             int per_25 = totalPixels / 4;
             int per_50 = totalPixels / 2;
@@ -49,35 +53,43 @@ namespace sharpclean
             bool b_25 = false, b_50 = false, b_75 = false;
             /*
             bool writeData = false;
-            if (ofilename != "none")
+            if (ofilename != "none") // if a .csv filename was given
             {
                 ofilename = "data/" + ofilename;
+
+                // store the headers, set writeData bool
                 System.IO.File.WriteAllText(ofilename, "val, size, edge, dust, obj, res, type, c avg, c edge, c size\n");
                 writeData = true;
             }
             */
-            selection s = new selection(pixels, imageWidth, totalPixels);
-            watch.Start();
+            selection s = new selection(pixels, imageWidth, totalPixels); // selection class 'selects' an object that it finds in the image
+
+            watch.Start(); // start time
             for (int i = 0; i < totalPixels; i++)
             {
-                if (s.get(i))
+                if (s.get(i)) // read as: given this pixel, if selection found a valid object to work with
                 {
-                    buffer = s.Buffer;
-                    perimeter = s.Perimeter;
+                    buffer = s.Buffer;          // buffer is each pixel id in the selection
+                    perimeter = s.Perimeter;    // perimeter is each pixel on the edge of the selection
+
+                    // data array: [0] is average value of the selection | [1] is the number of pixels | [2] is the ratio of edges to size of selection
                     data[1] = buffer.Count;
                     data[2] = data[1] / s.getEdges();
                     data[0] = getAverageValue(Convert.ToInt32(data[1]));
 
-                    conf c = confidence.getconfidence(data);
+                    conf c = confidence.getconfidence(data); // use data array to calculate a confidence
 
                     if (!c.isObj)
-                        colorbuffer(COLOR_CLEAR, Convert.ToInt32(data[1]));
+                        colorbuffer(COLOR_CLEAR, Convert.ToInt32(data[1])); // if it's not an object, get rid of it
 
-                    //if (writeData)
-                    //    printcsv(ref c);
+                    //if (writeData)  // if we're writing to a csv, do that
+                        //printcsv(ref c);
                 }
+                // clear the selection and clear the toolbox buffer
                 s.clearBuffer();
                 buffer.Clear();
+
+                // display percentage done based off what pixel we're on
                 if (i > per_25 && !b_25)
                 {
                     progressBar1.Value = 25;
@@ -134,12 +146,12 @@ namespace sharpclean
             return avg / sizeofbuffer;
         }
 
-        private pixel[] pixels = null;
+        private pixel[] pixels = null; // pixel data array
         private command cmd = new command();
         private int imageWidth, totalPixels;
-        private List<int> buffer = new List<int>();
-        private List<int> perimeter = new List<int>();
-        private double[] data = new double[3]; //average value, size, number of edges
+        private List<int> buffer = new List<int>(); // buffer of selected pixels (an object)
+        private List<int> perimeter = new List<int>(); // pixels on the perimeter of the object
+        private double[] data = new double[3]; // [0] average value | [1] size | [2] edge to size ratio
         //private string ofilename;
         //private readonly string toolbox_err = "::TOOLBOX::error : ";
     }
