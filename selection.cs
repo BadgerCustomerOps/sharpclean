@@ -89,8 +89,10 @@ namespace sharpclean
         private void fillPixels()
         {
             filler fill = new filler(pixels, width, total);
+
             for (int i = 0; i < bufferSize; i++)
                 fill.getBounds(buffer[i]);
+
             int count = 0;
             for (int i = 0; i < bufferSize; i++)
             {
