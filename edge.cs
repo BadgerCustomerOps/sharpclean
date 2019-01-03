@@ -33,7 +33,7 @@ namespace sharpclean
             perimeter.Add(mselection[0]);
             tree.insert(ref per, mselection[0]);
             perimSize++;
-            numEdges++;
+            //numEdges++;
             iterateEdges(); // begin iterating to find edges
 
             per = null;

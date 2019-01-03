@@ -8,7 +8,9 @@ namespace sharpclean
 {
     class toolbox
     {
-        public readonly int COLOR_CLEAR = 255; // color that the buffer will be 'painted' with
+        public readonly int COLOR_CLEAR = 25; // color that the buffer will be 'painted' with
+        public readonly int COLOR_EDGE = 125; // color that the edges will be 'painted' with
+
 
         public toolbox(pixel[] p, int width, int total)
         {
@@ -75,8 +77,12 @@ namespace sharpclean
 
                     conf c = confidence.getconfidence(data); // use data array to calculate a confidence
 
-                    if (!c.isObj)
-                        colorbuffer(COLOR_CLEAR, Convert.ToInt32(data[1])); // if it's not an object, get rid of it
+                    Console.WriteLine(s.getEdges());
+                    colorbuffer(COLOR_CLEAR, Convert.ToInt32(data[1])); // if it's not an object, get rid of it
+                    coloredges(COLOR_EDGE, perimeter.Count);
+
+                    //if (!c.isObj)
+                    //    colorbuffer(COLOR_CLEAR, Convert.ToInt32(data[1])); // if it's not an object, get rid of it
 
                     if (writeData)  // if we're writing to a csv, do that
                         printcsv(ref c);
