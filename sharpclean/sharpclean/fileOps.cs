@@ -8,6 +8,7 @@ using System.IO;
 using ImageMagick;
 using System.Drawing;
 
+
 namespace sharpclean
 {
     // Handles file operations for the program, including opening and saving images, locating paths, and user interfacing
@@ -161,9 +162,14 @@ namespace sharpclean
             {
                 storeName = "Stop & Shop";
             }
-            else if (folder.Substring(0, 3).ToUpper() == "SNS")
+            else if (folder.Length > 3)
             {
-                storeName = "Stop & Shop";
+                if(folder.Substring(0, 3).ToUpper() == "SNS")
+                    storeName = "Stop & Shop";
+                else
+                {
+                    storeName = "Unknown Store";
+                }
             }
             else
             {
