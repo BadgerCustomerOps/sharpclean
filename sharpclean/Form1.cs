@@ -210,28 +210,10 @@ namespace sharpclean
         {
             // Maybe we want to have a readme doc for FAQ and assistance on GITHUB and this links to it???
 
-            // Create a new form to hold simple instructions and an external help page
-            Form helpForm = new Form();
+            // Display the Help Form
+            helpForm newHelpForm = new helpForm();
 
-            // Create a Rich Text Box to contain help instructions and a Link Label that contains a hyperlink to
-            // external help resources
-            RichTextBox helpInstructions = new RichTextBox();
-            LinkLabel externalHelp = new LinkLabel();
-
-            // Set values for the form properties
-            Size helpFormDim = new Size(500, 200);
-            Point helpFormPt = new Point(100, 100);
-            string helpFormTitle = "Help";
-
-            // Set the properties of the new help form
-            helpForm.Size = helpFormDim;
-            helpForm.DesktopLocation = helpFormPt;
-            helpForm.Text = helpFormTitle;
-
-            // Display the form
-            helpForm.Show();
-
-            // Display the text and hyperlink on the form
+            newHelpForm.Show();
             
 
             //MessageBox.Show("This displays the help feature, replace this with actual help instructions!");
