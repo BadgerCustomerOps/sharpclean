@@ -19,11 +19,11 @@ namespace sharpclean
         Image mapImage = null;
         toolbox tBox = null;
         string mapPath = "";
+        string csvPath = "";
         string dirPath;
         string trajPath;
         string offsetPath;
         string tempPGMPath = "";
-        string tempPNGPath = "";
 
         public Form1()
         {
@@ -49,15 +49,6 @@ namespace sharpclean
             catch (Exception ee)
             {
                 Console.WriteLine("No file (temp2.pgm) found to delete. Error: " + ee);
-            }
-            try
-            {
-                pictureBox1.Image.Dispose();
-                File.Delete(tempPNGPath);
-            }
-            catch (Exception ee)
-            {
-                Console.WriteLine("No file (temp.png) found to delete. Error: " + ee);
             }
             #endregion
         }
@@ -96,15 +87,6 @@ namespace sharpclean
                 {
                     Console.WriteLine("No file (temp2.pgm) found to delete. Error: " + ee);
                 }
-                try
-                {
-                    pictureBox1.Image.Dispose();
-                    File.Delete(tempPNGPath);
-                }
-                catch (Exception ee)
-                {
-                    Console.WriteLine("No file (temp.png) found to delete. Error: " + ee);
-                }
                 #endregion
 
                 // Assign the image and clear the picturebox
@@ -120,7 +102,16 @@ namespace sharpclean
                 // Assign the paths for the offset and trajectory files
                 this.offsetPath = mapCleanup.getOffset();
                 this.trajPath = mapCleanup.getTraj();
-                mapCleanup.generateParkandDock();
+
+                // If the paths for both the offset and trajectory files aren't found, do not generate Park and Dock coordinates
+                if (this.offsetPath != "" && this.trajPath != "")
+                {
+                    mapCleanup.generateParkandDock(true);
+                }
+                else
+                {
+                    mapCleanup.generateParkandDock(false);
+                }
 
                 // Generate a .pgm file 
                 string pgmPath = mapCleanup.generatePGM();
@@ -132,9 +123,16 @@ namespace sharpclean
                 label2.Visible = true;
                 label3.Visible = true;
 
+                // Get the store name and number
+                string storeName = mapCleanup.getStoreInfo("name");
+                string storeNumber = mapCleanup.getStoreInfo("number");
+
                 // Populate the labels with the store name and the store number
-                label4.Text = mapCleanup.getStoreInfo("name");
-                label5.Text = mapCleanup.getStoreInfo("number");
+                label4.Text = storeName;
+                label5.Text = storeNumber;
+
+                // Create data path as "[directory]\[storename][storenumber]data.csv"
+                csvPath = mapCleanup.getDir() + "\\" + storeName + storeNumber + "data.csv";
 
                 // Load the image
                 if (img.load(pgmPath))
@@ -160,28 +158,34 @@ namespace sharpclean
                 // Update the progress bar as the cleaning is performed
                 tBox.clean(progressBar1);
                 
-                // Create a path to temporary cleaned .pgm and .png files
-                this.tempPGMPath = mapCleanup.getDir() + "\\" + "temp2.pgm";
-                this.tempPNGPath = mapCleanup.getDir() + "\\" + "temp.png";
+                // Create a path to temporary cleaned .pgm file
+                this.tempPGMPath = mapCleanup.getDir() + "\\" + "cleanedmaptemp.pgm";
 
                 // Create a temporary cleaned .pgm file to hold the cleaned map
                 img.write(tempPGMPath);
+
+                // Initialize byte array to hold .png data
+                byte[] pngData;
 
                 // Create a new temporary cleaned .png file to hold the cleaned map to be used by the picturebox
                 using (MagickImage newPNG = new MagickImage(this.tempPGMPath))
                 {
                     newPNG.Format = MagickFormat.Png;
-                    byte[] pngData = newPNG.ToByteArray();
-                    File.WriteAllBytes(tempPNGPath, pngData);
+                    pngData = newPNG.ToByteArray();
                 }
 
-                // Hide the temporary .png and .pgm files so the user can't select or delete them accidentally
+                // Create a memory stream to write the .png data to a bitmap which will be used to display the new image
+                MemoryStream mStream = new MemoryStream();
+                mStream.Write(pngData, 0, Convert.ToInt32(pngData.Length));
+                Bitmap tempPNG = new Bitmap(mStream, false);
+                mStream.Dispose();
+
+                // Hide the temporary .pgm files so the user can't select or delete them accidentally
                 File.SetAttributes(this.tempPGMPath, FileAttributes.Hidden);
-                File.SetAttributes(this.tempPNGPath, FileAttributes.Hidden);
 
                 // Set the picture box image to temp.png (This image is a cleaned version of the map, used for display purposes only)
                 pictureBox1.Image.Dispose();
-                pictureBox1.Image = Image.FromFile(this.tempPNGPath);
+                pictureBox1.Image = tempPNG;
 
                 // Display a message and enable saving upon success
                 MessageBox.Show("Cleaning is done!", "Clean done", 0);
@@ -196,12 +200,15 @@ namespace sharpclean
 
         private void button3_Click(object sender, EventArgs e) // Saves the file
         {
+            // Get the file's save name
             string fileSaveName = mapCleanup.getSaveFile();
 
             try
             {
+                // Write the file, notify the user, and allow the user to open the original file in GIMP
                 img.write(fileSaveName);
                 MessageBox.Show("File sucessfully saved!", "File Saved", 0);
+                button6.Enabled = true;
             }
             catch
             {
@@ -209,23 +216,46 @@ namespace sharpclean
             }
         }
 
-        private void button4_Click(object sender, EventArgs e)
+        private void button4_Click(object sender, EventArgs e) // Save Data Button
         {
-            MessageBox.Show("This saves the cleaning data to an excel file, replace this with actual code!");
+            // Open/create csvfile, get hte object data from the toolbox
+            StreamWriter csvfile = new StreamWriter(csvPath);
+            List<objectData> data = tBox.getObjectData();
+
+            // Write the file header
+            csvfile.WriteLine("val, size, edge, dust, obj, res, type, c avg, c edge, c size");
+
+            // Iterate through the list and print out the data
+            for (int i = 0; i < data.Count; i++)
+            {
+                csvfile.Write(data[i].avgval + "," + data[i].size + "," + data[i].edgeratio + "," + data[i].objconf.dust + "," + data[i].objconf.obj + ",");
+
+                if (data[i].objconf.isObj)
+                    csvfile.Write((data[i].objconf.obj - data[i].objconf.dust) + ",obj," + (data[i].objconf.o_val - data[i].objconf.d_val) + "," + (data[i].objconf.o_edge - data[i].objconf.d_edge) + "," + (data[i].objconf.o_size - data[i].objconf.d_size) + "\n");
+                else
+                    csvfile.Write((data[i].objconf.dust - data[i].objconf.obj) + ",dust," + (data[i].objconf.d_val - data[i].objconf.o_val) + "," + (data[i].objconf.d_edge - data[i].objconf.o_edge) + "," + (data[i].objconf.d_size - data[i].objconf.o_size) + "\n");
+            }
         }
 
-        private void button5_Click(object sender, EventArgs e)
+        private void button5_Click(object sender, EventArgs e) // Help Button
         {
-            // Maybe we want to have a readme doc for FAQ and assistance on GITHUB and this links to it???
-
             // Display the Help Form
             helpForm newHelpForm = new helpForm();
-
             newHelpForm.Show();
-            
+        }
 
-            //MessageBox.Show("This displays the help feature, replace this with actual help instructions!");
+        private void button6_Click(object sender, EventArgs e) // This button opens the original map in GIMP -- Needs to be made more robust
+        {
+            // Open GIMP with the original image
+            System.Diagnostics.Process.Start("C:\\Program Files\\GIMP 2\\bin\\gimp-2.10.exe", this.mapPath);
 
+            // Don't allow the user to open GIMP on the same file multiple times
+            button6.Enabled = false;
+        }
+
+        private void button7_Click(object sender, EventArgs e) // Eagle Eye Button
+        {
+            MessageBox.Show("Eagle Eye not yet implemented!");
         }
     }
 }

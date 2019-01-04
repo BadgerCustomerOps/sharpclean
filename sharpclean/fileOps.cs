@@ -25,6 +25,7 @@ namespace sharpclean
         public struct coords
         {
             public decimal x, y;
+            public bool usable;
         }
 
         public coords park, dock, globaloffset;
@@ -94,57 +95,69 @@ namespace sharpclean
 
         #endregion
 
-        public void generateParkandDock()
+        public void generateParkandDock(bool files_found)
         {
-            // open offset file, read to the 5th line and save the offset
-            StreamReader offsetfile = new StreamReader(offsetPath);
-
-            for (int i = 0; i < 5; i++)
-                offsetfile.ReadLine();
-
-            string[] ss;
-            string streamline = offsetfile.ReadLine();
-
-            if (streamline.Contains(":"))
+            if (files_found)
             {
-                ss = streamline.Split();
-                globaloffset.x = Convert.ToDecimal(ss[1]);
-                globaloffset.y = Convert.ToDecimal(ss[2]);
+                // open offset file, read to the 5th line and save the offset
+                StreamReader offsetfile = new StreamReader(offsetPath);
+
+                for (int i = 0; i < 5; i++)
+                    offsetfile.ReadLine();
+
+                string[] ss;
+                string streamline = offsetfile.ReadLine();
+
+                if (streamline.Contains(":"))
+                {
+                    ss = streamline.Split();
+                    globaloffset.x = Convert.ToDecimal(ss[1]);
+                    globaloffset.y = Convert.ToDecimal(ss[2]);
+                }
+
+                // open trajectory file, read to 'end_header' line while checking for 'element', if found then save vertex count
+                int vertexes = 0;
+
+                StreamReader trajfile = new StreamReader(trajPath);
+
+                while ((streamline = trajfile.ReadLine()) != "end_header")
+                {
+                    if ((ss = streamline.Split())[0] == "element")
+                        vertexes = Convert.ToInt16(ss[2]);
+                }
+
+                // store first two columns for park
+                ss = trajfile.ReadLine().Split();
+                park.x = Convert.ToDecimal(ss[0]);
+                park.y = Convert.ToDecimal(ss[1]);
+
+                // read to the last vertex element
+                for (int i = 0; i < vertexes - 2; i++)
+                    trajfile.ReadLine();
+
+                // store as dock
+                ss = trajfile.ReadLine().Split();
+                dock.x = Convert.ToDecimal(ss[0]);
+                dock.y = Convert.ToDecimal(ss[1]);
+
+                // convert offset to meters, convert park/dock to global meter coordinates
+                globaloffset.x = globaloffset.x / 20;
+                globaloffset.y = globaloffset.y / 20;
+
+                park.x += globaloffset.x;
+                park.y += globaloffset.y;
+                dock.x += globaloffset.x;
+                dock.y += globaloffset.y;
+
+                // Set the park and dock locations to be usable
+                park.usable = true;
+                dock.usable = true;
             }
-
-            // open trajectory file, read to 'end_header' line while checking for 'element', if found then save vertex count
-            int vertexes = 0;
-
-            StreamReader trajfile = new StreamReader(trajPath);
-
-            while ((streamline = trajfile.ReadLine()) != "end_header")
+            else
             {
-                if ((ss = streamline.Split())[0] == "element")
-                    vertexes = Convert.ToInt16(ss[2]);
+                park.usable = false;
+                dock.usable = false;
             }
-
-            // store first two columns for park
-            ss = trajfile.ReadLine().Split();
-            park.x = Convert.ToDecimal(ss[0]);
-            park.y = Convert.ToDecimal(ss[1]);
-
-            // read to the last vertex element
-            for (int i = 0; i < vertexes - 2; i++)
-                trajfile.ReadLine();
-
-            // store as dock
-            ss = trajfile.ReadLine().Split();
-            dock.x = Convert.ToDecimal(ss[0]);
-            dock.y = Convert.ToDecimal(ss[1]);
-
-            // convert offset to meters, convert park/dock to global meter coordinates
-            globaloffset.x = globaloffset.x / 20;
-            globaloffset.y = globaloffset.y / 20;
-
-            park.x += globaloffset.x;
-            park.y += globaloffset.y;
-            dock.x += globaloffset.x;
-            dock.y += globaloffset.y;
         }
 
         public string getTempPath()
@@ -152,10 +165,10 @@ namespace sharpclean
             return this.tempPath;
         }
 
-        public string generatePGM() // Generates 2 .pgm files from originally selected image and returns the path to a new pgm with the same name as the png
+        public string generatePGM() // Generates a .pgm file from originally selected image and returns the path to a new pgm with the same name as the png
         {
             // Set the temporary pgm file path
-            this.tempPath = this.dirPath + "\\" + "temp.pgm";
+            this.tempPath = this.dirPath + "\\" + "orignalmaptemp.pgm";
 
             // Using ImageMagick.NET, convert the .png image to .pgm
             using (MagickImage pngMap = new MagickImage(this.imgPath))
@@ -189,11 +202,28 @@ namespace sharpclean
         {
             SaveFileDialog saveFD = new SaveFileDialog();
 
+            #region File Dialog Settings
             saveFD.Title = "Save the image file";
             saveFD.Filter = "pgm files (*.pgm)|*.pgm";
-            //saveFD.FileName = "This is a test filename"; // This is how you set the filename
+
+            // Build the string for park and dock locations
+            string parkNdock = "_P_" + Math.Round(park.x, 2) + "_" + Math.Round(park.y, 2) + "_D_" + Math.Round(dock.x, 2) + "_" + Math.Round(dock.y, 2);
+
+            // If the park and dock locations have been calculated, add them to the file name, otherwise keep the same name as the original .png
+            if (park.usable && dock.usable)
+            {
+                saveFD.FileName = Path.GetFileName(this.dirPath) +  parkNdock;
+            }
+            else
+            {
+                saveFD.FileName = Path.GetFileNameWithoutExtension(this.imgPath);
+            }
+            
             saveFD.InitialDirectory = this.dirPath;
 
+            #endregion
+
+            // Get the result and return appropriate response
             DialogResult result = saveFD.ShowDialog();
 
             if (result == DialogResult.OK)
