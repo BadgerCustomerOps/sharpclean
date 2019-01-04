@@ -24,7 +24,6 @@ namespace sharpclean
         string trajPath;
         string offsetPath;
         string tempPGMPath = "";
-        string tempPNGPath = "";
 
         public Form1()
         {
@@ -50,15 +49,6 @@ namespace sharpclean
             catch (Exception ee)
             {
                 Console.WriteLine("No file (temp2.pgm) found to delete. Error: " + ee);
-            }
-            try
-            {
-                pictureBox1.Image.Dispose();
-                File.Delete(tempPNGPath);
-            }
-            catch (Exception ee)
-            {
-                Console.WriteLine("No file (temp.png) found to delete. Error: " + ee);
             }
             #endregion
         }
@@ -171,26 +161,30 @@ namespace sharpclean
                 
                 // Create a path to temporary cleaned .pgm file
                 this.tempPGMPath = mapCleanup.getDir() + "\\" + "temp2.pgm";
-                this.tempPNGPath = mapCleanup.getDir() + "\\" + "temp.png";
 
                 // Create a temporary cleaned .pgm file to hold the cleaned map
                 img.write(tempPGMPath);
+
+                byte[] pngData;
 
                 // Create a new temporary cleaned .png file to hold the cleaned map to be used by the picturebox
                 using (MagickImage newPNG = new MagickImage(this.tempPGMPath))
                 {
                     newPNG.Format = MagickFormat.Png;
-                    byte[] pngData = newPNG.ToByteArray();
-                    File.WriteAllBytes(tempPNGPath, pngData);
+                    pngData = newPNG.ToByteArray();
                 }
+
+                MemoryStream mStream = new MemoryStream();
+                mStream.Write(pngData, 0, Convert.ToInt32(pngData.Length));
+                Bitmap tempPNG = new Bitmap(mStream, false);
+                mStream.Dispose();
 
                 // Hide the temporary .pgm files so the user can't select or delete them accidentally
                 File.SetAttributes(this.tempPGMPath, FileAttributes.Hidden);
-                File.SetAttributes(this.tempPNGPath, FileAttributes.Hidden);
 
                 // Set the picture box image to temp.png (This image is a cleaned version of the map, used for display purposes only)
                 pictureBox1.Image.Dispose();
-                pictureBox1.Image = Image.FromFile(this.tempPNGPath);
+                pictureBox1.Image = tempPNG;
 
                 // Display a message and enable saving upon success
                 MessageBox.Show("Cleaning is done!", "Clean done", 0);
@@ -243,6 +237,8 @@ namespace sharpclean
             }
 
             csvfile.Close();
+
+            MessageBox.Show("Data Saved!", "Data Saved", 0);
         }
 
         private void button5_Click(object sender, EventArgs e) // Help Button

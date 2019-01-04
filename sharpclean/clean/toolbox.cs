@@ -107,13 +107,12 @@ namespace sharpclean
         // changes the color of the pixels and sets the touch value
         private void Brush(int trajectoryLocation)
         {
-            int color = 0;
             for (int i = -7; i < 8; i++)
             {
                 for (int k = -7; k < 8; k++)
                 {
                     int pixelLocation = trajectoryLocation + ((imageWidth * k) + i);
-                    pixels[pixelLocation].value = Convert.ToByte(color);
+                    pixels[pixelLocation].value = Convert.ToByte(COLOR_CLEAR);
                     pixels[pixelLocation].selected = true;
                 }
             }
