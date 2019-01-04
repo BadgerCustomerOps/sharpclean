@@ -146,7 +146,7 @@ namespace sharpclean
 
                 // Load the image
                 if (img.load(pgmPath))
-                    tBox = new toolbox(img.getpixels(), img.getImageData().width, img.getImageData().totalpixels);
+                    tBox = new toolbox(img.getpixels(), img.getImageData().width, img.getImageData().height, img.getImageData().totalpixels);
 
                 // Make the Clean Map button clickable
                 button2.Enabled = true; // Clean Map Button
@@ -175,9 +175,6 @@ namespace sharpclean
 
                 // Create a temporary cleaned .pgm file to hold the cleaned map
                 img.write(tempPGMPath);
-
-                // Initialize byte array to hold .png data
-                byte[] pngData;
 
                 // Create a new temporary cleaned .png file to hold the cleaned map to be used by the picturebox
                 using (MagickImage newPNG = new MagickImage(this.tempPGMPath))
