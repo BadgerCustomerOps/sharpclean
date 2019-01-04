@@ -124,6 +124,9 @@ namespace sharpclean
                 // Generate a .pgm file 
                 string pgmPath = mapCleanup.generatePGM();
 
+                // Hide the generated .pgm file
+                File.SetAttributes(pgmPath, FileAttributes.Hidden);
+
                 // Make the store info headers visible
                 label2.Visible = true;
                 label3.Visible = true;
@@ -170,6 +173,10 @@ namespace sharpclean
                     byte[] pngData = newPNG.ToByteArray();
                     File.WriteAllBytes(tempPNGPath, pngData);
                 }
+
+                // Hide the temporary .png and .pgm files so the user can't select or delete them accidentally
+                File.SetAttributes(this.tempPGMPath, FileAttributes.Hidden);
+                File.SetAttributes(this.tempPNGPath, FileAttributes.Hidden);
 
                 // Set the picture box image to temp.png (This image is a cleaned version of the map, used for display purposes only)
                 pictureBox1.Image.Dispose();
