@@ -63,6 +63,7 @@
             this.ClientSize = new System.Drawing.Size(730, 350);
             this.Controls.Add(this.linkLabel1);
             this.Controls.Add(this.richTextBox1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Location = new System.Drawing.Point(100, 100);
             this.Name = "helpForm";
             this.Text = "Help";

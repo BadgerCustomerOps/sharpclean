@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,9 +22,11 @@ namespace sharpclean
         string tempPath;
         string[] dirFiles;
 
-        public struct coords {
+        public struct coords
+        {
             public decimal x, y;
         }
+
         public coords park, dock, globaloffset;
 
         #region Public member functions
@@ -90,6 +92,8 @@ namespace sharpclean
             return this.offsetPath;
         }
 
+        #endregion
+
         public void getParkandDock()
         {
             // open offset file, read to the 5th line and save the offset
@@ -100,6 +104,7 @@ namespace sharpclean
 
             string[] ss;
             string streamline = offsetfile.ReadLine();
+
             if (streamline.Contains(":"))
             {
                 ss = streamline.Split();
@@ -109,8 +114,11 @@ namespace sharpclean
 
             // open trajectory file, read to 'end_header' line while checking for 'element', if found then save vertex count
             int vertexes = 0;
+
             StreamReader trajfile = new StreamReader(trajPath);
-            while((streamline = trajfile.ReadLine()) != "end_header") {
+
+            while ((streamline = trajfile.ReadLine()) != "end_header")
+            {
                 if ((ss = streamline.Split())[0] == "element")
                     vertexes = Convert.ToInt16(ss[2]);
             }
@@ -123,7 +131,7 @@ namespace sharpclean
             // read to the last vertex element
             for (int i = 0; i < vertexes - 2; i++)
                 trajfile.ReadLine();
-            
+
             // store as dock
             ss = trajfile.ReadLine().Split();
             dock.x = Convert.ToDecimal(ss[0]);
@@ -137,10 +145,7 @@ namespace sharpclean
             park.y += globaloffset.y;
             dock.x += globaloffset.x;
             dock.y += globaloffset.y;
-
         }
-
-        #endregion
 
         public string getTempPath()
         {
