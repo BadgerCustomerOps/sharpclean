@@ -81,6 +81,21 @@ namespace sharpclean
         public bool isObj;
     };
 
+    public class objectData
+    {
+        public objectData(double av, int s, double e)
+        {
+            avgval = av;
+            size = s;
+            edgeratio = e;
+        }
+
+        public double avgval;
+        public int size;
+        public double edgeratio;
+        public conf objconf;
+    }
+
     //for building the tree
     class tup
     {

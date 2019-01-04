@@ -8,13 +8,13 @@ namespace sharpclean
 {
     public static class confidence
     {
-        public static conf getconfidence(double[] d)
+        public static conf getconfidence(objectData d)
         {
             //avg, size, edge
             conf c = new conf();
-            value(c, d[0]);
-            size(c, d[1]);
-            edges(c, d[2]);
+            value(c, d.avgval);
+            size(c, d.size);
+            edges(c, d.edgeratio);
             c.dust = c.d_edge + c.d_size + c.d_val;
             c.obj = c.o_edge + c.o_size + c.o_val;
             if (c.dust > c.obj)

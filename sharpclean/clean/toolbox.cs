@@ -11,11 +11,12 @@ namespace sharpclean
     {
         public readonly int COLOR_CLEAR = 255;
 
-        public toolbox(pixel[] p, int width, int total)
+        public toolbox(pixel[] p, int width, int height, int total)
         {
             pixels = p;
             imageWidth = width;
             totalPixels = total;
+            imageHeight = height;
         }
 
         //gets some info for saving data, then taps run()
@@ -26,16 +27,6 @@ namespace sharpclean
                 MessageBox.Show("No Pixels Loaded", "no pixels", 0);
                 return;
             }
-            /*
-            int n = 0;
-            ofilename = "none";
-            if (cmd.getcmd("write data to .csv file? [1]yes, [2]no, [q]quit - ", ref n, 2))
-            {
-                if (n == 1)
-                    cmd.getfile("enter data output file name : ", ref ofilename, ".csv", 2);
-                run();
-            }
-            */
             run(progressBar1);
         }
 
@@ -56,39 +47,17 @@ namespace sharpclean
                 {
                     buffer = s.Buffer;
                     perimeter = s.Perimeter;
-                    data[1] = buffer.Count;
-                    data[2] = data[1] / s.getEdges();
-                    data[0] = getAverageValue(Convert.ToInt32(data[1]));
-
-                    conf c = confidence.getconfidence(data);
+                    objectData dat = new objectData(getAverageValue(buffer.Count), buffer.Count, buffer.Count / s.getEdges());
+                    conf c = confidence.getconfidence(dat);
+                    dat.objconf = c;
+                    objdat.Add(dat);
 
                     if (!c.isObj)
-                        colorbuffer(COLOR_CLEAR, Convert.ToInt32(data[1]));
+                        colorbuffer(COLOR_CLEAR, buffer.Count);
 
-                    //if (writeData)
-                    //    printcsv(ref c);
                 }
                 s.clearBuffer();
                 buffer.Clear();
-                /*
-                if (i > per_25 && !b_25)
-                {
-                    progressBar1.Value = 25;
-                    b_25 = true;
-                }
-
-                if (i > per_50 && !b_50)
-                {
-                    progressBar1.Value = 50;
-                    b_50 = true;
-                }
-
-                if (i > per_75 && !b_75)
-                {
-                    progressBar1.Value = 75;
-                    b_75 = true;
-                }
-                */
             }
             watch.Stop();
             Console.WriteLine("Time elapsed: {0}", watch.Elapsed);
@@ -108,18 +77,47 @@ namespace sharpclean
                 pixels[perimeter[i]].value = Convert.ToByte(color);
         }
 
-        //writes some data to a csv, if the user wants
-        /*
-        private void printcsv(ref conf c)
+        // debugging funciton to look at the walk path
+        public void PrintWalkPath(fileOps mapCleanup)
         {
-            System.IO.File.WriteAllText(ofilename, data[0] + "," + data[1] + "," + data[2] + "," + c.dust + "," + c.obj + ",");
-            if (c.isObj)
-                System.IO.File.WriteAllText(ofilename, (c.obj - c.dust) + ",obj," + (c.o_val - c.d_val) + "," + (c.o_edge - c.d_edge) + "," + (c.o_size - c.d_size) + "\n");
-            else
-                System.IO.File.WriteAllText(ofilename, (c.dust - c.obj) + ",dust," + (c.d_val - c.o_val) + "," + (c.d_edge - c.o_edge) + "," + (c.d_size - c.o_size) + "\n");
+            for (int i = 0; i < mapCleanup.walkPath.Count(); ++i)
+            {
+                Console.WriteLine("x: " +  mapCleanup.walkPath[i].x.ToString() + " y: " + mapCleanup.walkPath[i].y.ToString());
+            }
         }
-        */
-        //gets some data on the selection
+
+        // removes the path that was walked by using the the walk path genertated from the trajectory file in fileops
+        public void removeDebris(fileOps mapCleanup)
+        {
+            for (int x = 0; x < mapCleanup.walkPath.Count(); ++x)
+            {
+                dualtosingular(mapCleanup.walkPath[x].x, mapCleanup.walkPath[x].y);
+            }
+        }
+
+        // converts the 2d xy to 1d location
+        private void dualtosingular(int x, int y)
+        {
+            int width = imageWidth;
+            int height = imageHeight;
+            y = height - y;
+            int trajectoryLocation = ((y - 1) * width) + x;
+            Brush(trajectoryLocation);
+        }
+        // changes the color of the pixels and sets the touch value
+        private void Brush(int trajectoryLocation)
+        {
+            int color = 0;
+            for (int i = -7; i < 8; i++)
+            {
+                for (int k = -7; k < 8; k++)
+                {
+                    int pixelLocation = trajectoryLocation + ((imageWidth * k) + i);
+                    pixels[pixelLocation].value = Convert.ToByte(color);
+                    pixels[pixelLocation].selected = true;
+                }
+            }
+        }
         private double getAverageValue(int sizeofbuffer)
         {
             double avg = 0;
@@ -128,13 +126,16 @@ namespace sharpclean
             return avg / sizeofbuffer;
         }
 
+        public List<objectData> getObjectData()
+        {
+            return objdat;
+        }
+
         private pixel[] pixels = null;
         private command cmd = new command();
-        private int imageWidth, totalPixels;
+        private int imageWidth, totalPixels, imageHeight;
         private List<int> buffer = new List<int>();
         private List<int> perimeter = new List<int>();
-        private double[] data = new double[3]; //average value, size, number of edges
-        //private string ofilename;
-        //private readonly string toolbox_err = "::TOOLBOX::error : ";
+        private List<objectData> objdat = new List<objectData>();
     }
 }
