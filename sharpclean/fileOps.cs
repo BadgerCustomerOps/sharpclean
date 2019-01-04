@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,6 +21,11 @@ namespace sharpclean
         string offsetPath;
         string tempPath;
         string[] dirFiles;
+
+        public struct coords {
+            public decimal x, y;
+        }
+        public coords park, dock, globaloffset;
 
         #region Public member functions
 
@@ -83,6 +88,56 @@ namespace sharpclean
         {
             this.offsetPath = getFilebyType(".info");
             return this.offsetPath;
+        }
+
+        public void getParkandDock()
+        {
+            // open offset file, read to the 5th line and save the offset
+            StreamReader offsetfile = new StreamReader(offsetPath);
+
+            for (int i = 0; i < 5; i++)
+                offsetfile.ReadLine();
+
+            string[] ss;
+            string streamline = offsetfile.ReadLine();
+            if (streamline.Contains(":"))
+            {
+                ss = streamline.Split();
+                globaloffset.x = Convert.ToDecimal(ss[1]);
+                globaloffset.y = Convert.ToDecimal(ss[2]);
+            }
+
+            // open trajectory file, read to 'end_header' line while checking for 'element', if found then save vertex count
+            int vertexes = 0;
+            StreamReader trajfile = new StreamReader(trajPath);
+            while((streamline = trajfile.ReadLine()) != "end_header") {
+                if ((ss = streamline.Split())[0] == "element")
+                    vertexes = Convert.ToInt16(ss[2]);
+            }
+
+            // store first two columns for park
+            ss = trajfile.ReadLine().Split();
+            park.x = Convert.ToDecimal(ss[0]);
+            park.y = Convert.ToDecimal(ss[1]);
+
+            // read to the last vertex element
+            for (int i = 0; i < vertexes - 2; i++)
+                trajfile.ReadLine();
+            
+            // store as dock
+            ss = trajfile.ReadLine().Split();
+            dock.x = Convert.ToDecimal(ss[0]);
+            dock.y = Convert.ToDecimal(ss[1]);
+
+            // convert offset to meters, convert park/dock to global meter coordinates
+            globaloffset.x = globaloffset.x / 20;
+            globaloffset.y = globaloffset.y / 20;
+
+            park.x += globaloffset.x;
+            park.y += globaloffset.y;
+            dock.x += globaloffset.x;
+            dock.y += globaloffset.y;
+
         }
 
         #endregion
