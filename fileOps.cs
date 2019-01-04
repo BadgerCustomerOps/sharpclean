@@ -22,6 +22,20 @@ namespace sharpclean
         string tempPath;
         string[] dirFiles;
 
+        public struct coords
+        {
+            public decimal x, y;
+            public bool usable;
+        }
+
+        public struct intCoords
+        {
+            public int x, y;
+        }
+
+        public coords park, dock, globaloffset;
+        public intCoords[] walkPath;
+
         #region Public member functions
 
         // Constructor
@@ -87,6 +101,81 @@ namespace sharpclean
 
         #endregion
 
+        public void generateParkandDock(bool files_found)
+        {
+            if (files_found)
+            {
+                // open offset file, read to the 5th line and save the offset
+                StreamReader offsetfile = new StreamReader(offsetPath);
+
+                for (int i = 0; i < 5; i++)
+                    offsetfile.ReadLine();
+
+                string[] ss;
+                string streamline = offsetfile.ReadLine();
+
+                if (streamline.Contains(":"))
+                {
+                    ss = streamline.Split();
+                    globaloffset.x = Convert.ToDecimal(ss[1]);
+                    globaloffset.y = Convert.ToDecimal(ss[2]);
+                }
+
+                // open trajectory file, read to 'end_header' line while checking for 'element', if found then save vertex count
+                int vertexes = 0;
+
+                StreamReader trajfile = new StreamReader(trajPath);
+
+                while ((streamline = trajfile.ReadLine()) != "end_header")
+                {
+                    if ((ss = streamline.Split())[0] == "element")
+                        vertexes = Convert.ToInt16(ss[2]);
+                }
+                walkPath = new intCoords[vertexes - 1];
+
+
+                // store first two columns for park
+                ss = trajfile.ReadLine().Split();
+                park.x = Convert.ToDecimal(ss[0]);
+                park.y = Convert.ToDecimal(ss[1]);
+
+                // store walk path with conversions
+                walkPath[0].x = Convert.ToInt16((Convert.ToDecimal(ss[0]) * 20)) + Convert.ToInt16(globaloffset.x);
+                walkPath[0].y = Convert.ToInt16((Convert.ToDecimal(ss[1]) * 20)) + Convert.ToInt16(globaloffset.y);
+
+                // read to the second to last vertex element
+                for (int i = 1; i < vertexes - 1; i++)
+                {
+                    ss = trajfile.ReadLine().Split();
+                    walkPath[i].x = Convert.ToInt32((Convert.ToDecimal(ss[0]) * 20)) + Convert.ToInt32(globaloffset.x);
+                    walkPath[i].y = Convert.ToInt32((Convert.ToDecimal(ss[1]) * 20)) + Convert.ToInt32(globaloffset.y);
+                }
+
+                // store as dock
+                ss = trajfile.ReadLine().Split();
+                dock.x = Convert.ToDecimal(ss[0]);
+                dock.y = Convert.ToDecimal(ss[1]);
+
+                // convert offset to meters, convert park/dock to global meter coordinates
+                globaloffset.x = globaloffset.x / 20;
+                globaloffset.y = globaloffset.y / 20;
+
+                park.x += globaloffset.x;
+                park.y += globaloffset.y;
+                dock.x += globaloffset.x;
+                dock.y += globaloffset.y;
+
+                // Set the park and dock locations to be usable
+                park.usable = true;
+                dock.usable = true;
+            }
+            else
+            {
+                park.usable = false;
+                dock.usable = false;
+            }
+        }
+
         public string getTempPath()
         {
             return this.tempPath;
@@ -131,6 +220,20 @@ namespace sharpclean
 
             saveFD.Title = "Save the image file";
             saveFD.Filter = "pgm files (*.pgm)|*.pgm";
+
+            // Build the string for park and dock locations
+            string parkNdock = "_P_" + Math.Round(park.x, 2) + "_" + Math.Round(park.y, 2) + "_D_" + Math.Round(dock.x, 2) + "_" + Math.Round(dock.y, 2);
+
+            // If the park and dock locations have been calculated, add them to the file name, otherwise keep the same name as the original .png
+            if (park.usable && dock.usable)
+            {
+                saveFD.FileName = Path.GetFileName(this.dirPath) + parkNdock;
+            }
+            else
+            {
+                saveFD.FileName = Path.GetFileNameWithoutExtension(this.imgPath);
+            }
+
             saveFD.InitialDirectory = this.dirPath;
 
             DialogResult result = saveFD.ShowDialog();
@@ -164,7 +267,7 @@ namespace sharpclean
             }
             else if (folder.Length > 3)
             {
-                if(folder.Substring(0, 3).ToUpper() == "SNS")
+                if (folder.Substring(0, 3).ToUpper() == "SNS")
                     storeName = "Stop & Shop";
                 else
                 {
