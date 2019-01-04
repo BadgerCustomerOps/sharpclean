@@ -120,6 +120,7 @@ namespace sharpclean
                 // Assign the paths for the offset and trajectory files
                 this.offsetPath = mapCleanup.getOffset();
                 this.trajPath = mapCleanup.getTraj();
+                mapCleanup.generateParkandDock();
 
                 // Generate a .pgm file 
                 string pgmPath = mapCleanup.generatePGM();

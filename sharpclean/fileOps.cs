@@ -94,7 +94,7 @@ namespace sharpclean
 
         #endregion
 
-        public void getParkandDock()
+        public void generateParkandDock()
         {
             // open offset file, read to the 5th line and save the offset
             StreamReader offsetfile = new StreamReader(offsetPath);

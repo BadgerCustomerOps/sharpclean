@@ -49,11 +49,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="command.cs" />
-    <Compile Include="confidence.cs" />
-    <Compile Include="edge.cs" />
+    <Compile Include="clean\command.cs" />
+    <Compile Include="clean\confidence.cs" />
+    <Compile Include="clean\edge.cs" />
     <Compile Include="fileOps.cs" />
-    <Compile Include="filler.cs" />
+    <Compile Include="clean\filler.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -66,14 +66,13 @@
     <Compile Include="helpForm.Designer.cs">
       <DependentUpon>helpForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="home.cs" />
-    <Compile Include="image.cs" />
-    <Compile Include="metatypes.cs" />
+    <Compile Include="clean\image.cs" />
+    <Compile Include="clean\metatypes.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="selection.cs" />
-    <Compile Include="toolbox.cs" />
-    <Compile Include="tree.cs" />
+    <Compile Include="clean\selection.cs" />
+    <Compile Include="clean\toolbox.cs" />
+    <Compile Include="clean\tree.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
