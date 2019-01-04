@@ -28,7 +28,13 @@ namespace sharpclean
             public bool usable;
         }
 
+        public struct intCoords
+        {
+            public int x, y;
+        }
+
         public coords park, dock, globaloffset;
+        public intCoords[] walkPath;
 
         #region Public member functions
 
@@ -125,15 +131,25 @@ namespace sharpclean
                     if ((ss = streamline.Split())[0] == "element")
                         vertexes = Convert.ToInt16(ss[2]);
                 }
+                walkPath = new intCoords[vertexes - 1];
+
 
                 // store first two columns for park
                 ss = trajfile.ReadLine().Split();
                 park.x = Convert.ToDecimal(ss[0]);
                 park.y = Convert.ToDecimal(ss[1]);
 
-                // read to the last vertex element
-                for (int i = 0; i < vertexes - 2; i++)
-                    trajfile.ReadLine();
+                // store walk path with conversions
+                walkPath[0].x = Convert.ToInt16((Convert.ToDecimal(ss[0]) * 20)) + Convert.ToInt16(globaloffset.x);
+                walkPath[0].y = Convert.ToInt16((Convert.ToDecimal(ss[1]) * 20)) + Convert.ToInt16(globaloffset.y);
+
+                // read to the second to last vertex element
+                for (int i = 1; i < vertexes - 1; i++)
+                {
+                    ss = trajfile.ReadLine().Split();
+                    walkPath[i].x = Convert.ToInt32((Convert.ToDecimal(ss[0]) * 20)) + Convert.ToInt32(globaloffset.x);
+                    walkPath[i].y = Convert.ToInt32((Convert.ToDecimal(ss[1]) * 20)) + Convert.ToInt32(globaloffset.y);
+                }
 
                 // store as dock
                 ss = trajfile.ReadLine().Split();
@@ -165,10 +181,10 @@ namespace sharpclean
             return this.tempPath;
         }
 
-        public string generatePGM() // Generates a .pgm file from originally selected image and returns the path to a new pgm with the same name as the png
+        public string generatePGM() // Generates 2 .pgm files from originally selected image and returns the path to a new pgm with the same name as the png
         {
             // Set the temporary pgm file path
-            this.tempPath = this.dirPath + "\\" + "orignalmaptemp.pgm";
+            this.tempPath = this.dirPath + "\\" + "temp.pgm";
 
             // Using ImageMagick.NET, convert the .png image to .pgm
             using (MagickImage pngMap = new MagickImage(this.imgPath))
@@ -202,7 +218,6 @@ namespace sharpclean
         {
             SaveFileDialog saveFD = new SaveFileDialog();
 
-            #region File Dialog Settings
             saveFD.Title = "Save the image file";
             saveFD.Filter = "pgm files (*.pgm)|*.pgm";
 
@@ -212,18 +227,15 @@ namespace sharpclean
             // If the park and dock locations have been calculated, add them to the file name, otherwise keep the same name as the original .png
             if (park.usable && dock.usable)
             {
-                saveFD.FileName = Path.GetFileName(this.dirPath) +  parkNdock;
+                saveFD.FileName = Path.GetFileName(this.dirPath) + parkNdock;
             }
             else
             {
                 saveFD.FileName = Path.GetFileNameWithoutExtension(this.imgPath);
             }
-            
+
             saveFD.InitialDirectory = this.dirPath;
 
-            #endregion
-
-            // Get the result and return appropriate response
             DialogResult result = saveFD.ShowDialog();
 
             if (result == DialogResult.OK)
@@ -255,7 +267,7 @@ namespace sharpclean
             }
             else if (folder.Length > 3)
             {
-                if(folder.Substring(0, 3).ToUpper() == "SNS")
+                if (folder.Substring(0, 3).ToUpper() == "SNS")
                     storeName = "Stop & Shop";
                 else
                 {
