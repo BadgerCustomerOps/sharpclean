@@ -24,6 +24,7 @@ namespace sharpclean
         string trajPath;
         string offsetPath;
         string tempPGMPath = "";
+        string fileSaveName = "";
 
         public Form1()
         {
@@ -201,7 +202,7 @@ namespace sharpclean
         private void button3_Click(object sender, EventArgs e) // Saves the file
         {
             // Get the file's save name
-            string fileSaveName = mapCleanup.getSaveFile();
+            this.fileSaveName = mapCleanup.getSaveFile();
 
             try
             {
@@ -250,9 +251,9 @@ namespace sharpclean
 
         private void button6_Click(object sender, EventArgs e) // This button opens the original map in GIMP -- Needs to be made more robust
         {
-            // Open GIMP with the original image
-            System.Diagnostics.Process.Start("C:\\Program Files\\GIMP 2\\bin\\gimp-2.10.exe", this.mapPath);
-
+            // Open GIMP with the original image and the new image
+            System.Diagnostics.Process.Start("C:\\Program Files\\GIMP 2\\bin\\gimp-2.10.exe", this.mapPath + " " + this.fileSaveName);
+            
             // Don't allow the user to open GIMP on the same file multiple times
             button6.Enabled = false;
         }
