@@ -28,7 +28,10 @@ namespace sharpclean
 
         public Form1()
         {
+            // Initializes form components
             InitializeComponent();
+
+            // Adds the form closing event (the red x in the top right corner)
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
         }
 
@@ -147,6 +150,9 @@ namespace sharpclean
                 progressBar1.Visible = true;
                 progressBar1.Value = 0;
                 progressBar1.Maximum = img.getImageData().totalpixels;
+
+                // Allow Eagle Eye to be turned on
+                button7.Enabled = true;
             }
         }
 
@@ -190,7 +196,7 @@ namespace sharpclean
                 // Display a message and enable saving upon success
                 MessageBox.Show("Cleaning is done!", "Clean done", 0);
                 button3.Enabled = true; // Save Map Button
-                button4.Enabled = true; // save data button
+                button4.Enabled = true; // Save Data button
 
                 // Disable the Clean Map button
                 button2.Enabled = false;
@@ -251,7 +257,7 @@ namespace sharpclean
 
         private void button6_Click(object sender, EventArgs e) // This button opens the original map in GIMP -- Needs to be made more robust
         {
-            // Open GIMP with the original image and the new image
+            // Open GIMP with the original image and the new image - may need to search for .exe based on different version of GIMP
             System.Diagnostics.Process.Start("C:\\Program Files\\GIMP 2\\bin\\gimp-2.10.exe", this.mapPath + " " + this.fileSaveName);
             
             // Don't allow the user to open GIMP on the same file multiple times
@@ -260,7 +266,9 @@ namespace sharpclean
 
         private void button7_Click(object sender, EventArgs e) // Eagle Eye Button
         {
+            button7.Enabled = false;
             MessageBox.Show("Eagle Eye not yet implemented!");
+            button7.Enabled = true;
         }
     }
 }
