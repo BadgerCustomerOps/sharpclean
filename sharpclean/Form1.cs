@@ -63,8 +63,6 @@ namespace sharpclean
             // Assign map path by bringing up file dialog
             this.mapPath = this.mapCleanup.getImage();
 
-            Console.WriteLine(Directory.GetFiles(Path.GetDirectoryName(mapPath)));
-
             // check for pre-existing temp files - delete any if found
             string[] files = Directory.GetFiles(Path.GetDirectoryName(mapPath), "*.pgm", SearchOption.AllDirectories);
             for (int i = 0; i < files.Count(); i++) {
@@ -267,22 +265,8 @@ namespace sharpclean
 
         private void button6_Click(object sender, EventArgs e) // This button opens the original map in GIMP -- Needs to be made more robust
         {
-            /* gimp-2.10 
-             * -d 
-             * -b 
-             * '(open-as-layer 
-             * "C:\Users\100057822\Desktop\maps\SNS\14-1\maps\testoriginal.pgm" 
-             * "C:\Users\100057822\Desktop\maps\SNS\14-1\maps\testfinished.pgm" 
-             * )'
-             * 
-            */
-
-            // string gimpargs = "-d -b '(open-as-layer \"" + mapPath + "\" \"" + fileSaveName + "\")'";
-            // System.Diagnostics.Process.Start("C:\\Program Files\\GIMP 2\\bin\\gimp-2.10.exe", gimpargs);
-            /* * * working on this bit -- austin * * */
-
             // Open GIMP with the original image and the new image - may need to search for .exe based on different version of GIMP
-            System.Diagnostics.Process.Start("C:\\Program Files\\GIMP 2\\bin\\gimp-2.10.exe", this.mapPath + " " + this.fileSaveName);
+            System.Diagnostics.Process.Start("C:\\Program Files\\GIMP 2\\bin\\gimp-2.10.exe", "\"" + this.mapPath + "\" \"" + this.fileSaveName + "\"");
 
             // Don't allow the user to open GIMP on the same file multiple times
             button6.Enabled = false;
