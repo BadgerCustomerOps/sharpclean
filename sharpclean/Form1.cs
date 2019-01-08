@@ -10,6 +10,11 @@ using System.Windows.Forms;
 using System.IO;
 using ImageMagick;
 
+/*
+ * Sharp Clean: Program.cs
+ * Author: Joey Harrison
+ */
+
 namespace sharpclean
 {
     public partial class Form1 : Form

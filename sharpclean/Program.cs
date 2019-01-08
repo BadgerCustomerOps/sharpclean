@@ -4,6 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+/*
+ * Sharp Clean: Program.cs
+ * Author: Joey Harrison
+ */
+
 namespace sharpclean
 {
     static class Program
@@ -12,7 +17,7 @@ namespace sharpclean
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        static void Main(string[] args)
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
