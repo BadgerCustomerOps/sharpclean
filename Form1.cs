@@ -10,6 +10,11 @@ using System.Windows.Forms;
 using System.IO;
 using ImageMagick;
 
+/*
+ * Sharp Clean: Program.cs
+ * Author: Joey Harrison
+ */
+
 namespace sharpclean
 {
     public partial class Form1 : Form
@@ -24,10 +29,14 @@ namespace sharpclean
         string trajPath;
         string offsetPath;
         string tempPGMPath = "";
+        string fileSaveName = "";
 
         public Form1()
         {
+            // Initializes form components
             InitializeComponent();
+
+            // Adds the form closing event (the red x in the top right corner)
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
         }
 
@@ -58,6 +67,14 @@ namespace sharpclean
         {
             // Assign map path by bringing up file dialog
             this.mapPath = this.mapCleanup.getImage();
+
+            // check for pre-existing temp files - delete any if found
+            string[] files = Directory.GetFiles(Path.GetDirectoryName(mapPath), "*.pgm", SearchOption.AllDirectories);
+            for (int i = 0; i < files.Count(); i++) {
+                Console.WriteLine(files[i]);
+                if (Path.GetFileName(files[i]) == "temp.pgm" || Path.GetFileName(files[i]) == "temp2.pgm")
+                    File.Delete(files[i]);
+            }
 
             // Only continue if a valid .png file was selected
             if (this.mapPath != "err::no_map_selected")
@@ -146,11 +163,14 @@ namespace sharpclean
                 progressBar1.Visible = true;
                 progressBar1.Value = 0;
                 progressBar1.Maximum = img.getImageData().totalpixels;
+
+                // Allow Eagle Eye to be turned on
+                button7.Enabled = true;
             }
         }
 
         private void button2_Click(object sender, EventArgs e) // Cleans the map
-        {   
+        {
             if (tBox != null)
             {
                 if (trajPath != "")
@@ -158,7 +178,7 @@ namespace sharpclean
 
                 // Update the progress bar as the cleaning is performed
                 tBox.clean(progressBar1);
-                
+
                 // Create a path to temporary cleaned .pgm file
                 this.tempPGMPath = mapCleanup.getDir() + "\\" + "temp2.pgm";
 
@@ -189,7 +209,7 @@ namespace sharpclean
                 // Display a message and enable saving upon success
                 MessageBox.Show("Cleaning is done!", "Clean done", 0);
                 button3.Enabled = true; // Save Map Button
-                button4.Enabled = true; // save data button
+                button4.Enabled = true; // Save Data button
 
                 // Disable the Clean Map button
                 button2.Enabled = false;
@@ -201,7 +221,7 @@ namespace sharpclean
         private void button3_Click(object sender, EventArgs e) // Saves the file
         {
             // Get the file's save name
-            string fileSaveName = mapCleanup.getSaveFile();
+            this.fileSaveName = mapCleanup.getSaveFile();
 
             try
             {
@@ -250,8 +270,8 @@ namespace sharpclean
 
         private void button6_Click(object sender, EventArgs e) // This button opens the original map in GIMP -- Needs to be made more robust
         {
-            // Open GIMP with the original image
-            System.Diagnostics.Process.Start("C:\\Program Files\\GIMP 2\\bin\\gimp-2.10.exe", this.mapPath);
+            // Open GIMP with the original image and the new image - may need to search for .exe based on different version of GIMP
+            System.Diagnostics.Process.Start("C:\\Program Files\\GIMP 2\\bin\\gimp-2.10.exe", "\"" + this.mapPath + "\" \"" + this.fileSaveName + "\"");
 
             // Don't allow the user to open GIMP on the same file multiple times
             button6.Enabled = false;
@@ -259,7 +279,9 @@ namespace sharpclean
 
         private void button7_Click(object sender, EventArgs e) // Eagle Eye Button
         {
+            button7.Enabled = false;
             MessageBox.Show("Eagle Eye not yet implemented!");
+            button7.Enabled = true;
         }
     }
 }

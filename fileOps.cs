@@ -8,6 +8,10 @@ using System.IO;
 using ImageMagick;
 using System.Drawing;
 
+/*
+ * Sharp Clean: fileOps.cs
+ * Author: Joey Harrison
+ */
 
 namespace sharpclean
 {

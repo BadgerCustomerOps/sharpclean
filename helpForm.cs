@@ -9,6 +9,11 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
 
+/*
+ * Sharp Clean: Program.cs
+ * Author: Joey Harrison
+ */
+
 namespace sharpclean
 {
     public partial class helpForm : Form
