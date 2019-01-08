@@ -4,6 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+/*
+ * Sharp Clean: clean/metatypes.cs
+ * Author: Austin Herman
+ */
+
 namespace sharpclean
 {
     //the .pgm file's basic data
@@ -23,10 +28,10 @@ namespace sharpclean
     //a basic pixel class
     struct pixel
     {
-        public bool selected;  //used for selection
-        public bool found;
-        public byte value;        //grey value
-        public int id;            //ID [0->totalpixels]
+        public bool selected;   //used for selection
+        public bool found;      //used in filler
+        public byte value;      //grey value
+        public int id;          //ID [0->totalpixels]
     };
 
     //edge and filler use this for navigation around the pixel map

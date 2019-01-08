@@ -5,6 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+/*
+ * Sharp Clean: clean/toolbox.cs
+ * Author: Austin Herman
+ * Edited: Jair Ramirez 1/4/2017
+ */
+
 namespace sharpclean
 {
     class toolbox
@@ -38,7 +44,6 @@ namespace sharpclean
             selection s = new selection(pixels, imageWidth, totalPixels);
             for (int i = 0; i < totalPixels; i++)
             {
-                // Testing
                 progressBar1.Value = i;
 
                 if (s.get(i))

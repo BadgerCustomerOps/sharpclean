@@ -4,6 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+/*
+ * Sharp Clean: clean/edge.cs
+ * Author: Austin Herman
+ */
+
 namespace sharpclean
 {
     class edge

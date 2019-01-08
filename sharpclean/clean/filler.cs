@@ -4,6 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+/*
+ * Sharp Clean: clean/filler.cs
+ * Author: Austin Herman
+ */
+
 namespace sharpclean
 {
     class filler
