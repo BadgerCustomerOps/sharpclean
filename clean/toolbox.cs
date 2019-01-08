@@ -5,11 +5,18 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+/*
+ * Sharp Clean: clean/toolbox.cs
+ * Author: Austin Herman
+ * Edited: Jair Ramirez 1/4/2017
+ */
+
 namespace sharpclean
 {
     class toolbox
     {
         public readonly int COLOR_CLEAR = 255;
+        public readonly int BRUSH_SIZE = 16;
 
         public toolbox(pixel[] p, int width, int height, int total)
         {
@@ -17,13 +24,14 @@ namespace sharpclean
             imageWidth = width;
             totalPixels = total;
             imageHeight = height;
+            brushRelativeMin = BRUSH_SIZE / 2 - 1;
+            brushRelativeMax = BRUSH_SIZE / 2;
         }
 
         //gets some info for saving data, then taps run()
         public void clean(ProgressBar progressBar1)
         {
-            if (pixels == null)
-            {
+            if (pixels == null) {
                 MessageBox.Show("No Pixels Loaded", "no pixels", 0);
                 return;
             }
@@ -33,14 +41,9 @@ namespace sharpclean
         //the big boy, iterates through the pixels and drives algorithms
         private void run(ProgressBar progressBar1)
         {
-            // Timing the runtime
-            System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
-
             selection s = new selection(pixels, imageWidth, totalPixels);
-            watch.Start();
             for (int i = 0; i < totalPixels; i++)
             {
-                // Testing
                 progressBar1.Value = i;
 
                 if (s.get(i))
@@ -59,8 +62,6 @@ namespace sharpclean
                 s.clearBuffer();
                 buffer.Clear();
             }
-            watch.Stop();
-            Console.WriteLine("Time elapsed: {0}", watch.Elapsed);
         }
 
         //colors a selection of pixels
@@ -81,42 +82,32 @@ namespace sharpclean
         public void PrintWalkPath(fileOps mapCleanup)
         {
             for (int i = 0; i < mapCleanup.walkPath.Count(); ++i)
-            {
-                Console.WriteLine("x: " +  mapCleanup.walkPath[i].x.ToString() + " y: " + mapCleanup.walkPath[i].y.ToString());
-            }
+                Console.WriteLine("x: " +  mapCleanup.walkPath[i].x.ToString() + " y: " + mapCleanup.walkPath[i].y.ToString()); 
         }
 
         // removes the path that was walked by using the the walk path genertated from the trajectory file in fileops
         public void removeDebris(fileOps mapCleanup)
         {
-            for (int x = 0; x < mapCleanup.walkPath.Count(); ++x)
-            {
-                dualtosingular(mapCleanup.walkPath[x].x, mapCleanup.walkPath[x].y);
-            }
+            for (int i = 0; i < mapCleanup.walkPath.Count(); i++)
+                Brush(((imageHeight - mapCleanup.walkPath[i].y - 1) * imageWidth) + mapCleanup.walkPath[i].x);
         }
 
-        // converts the 2d xy to 1d location
-        private void dualtosingular(int x, int y)
-        {
-            int width = imageWidth;
-            int height = imageHeight;
-            y = height - y;
-            int trajectoryLocation = ((y - 1) * width) + x;
-            Brush(trajectoryLocation);
-        }
         // changes the color of the pixels and sets the touch value
         private void Brush(int trajectoryLocation)
         {
-            for (int i = -7; i < 8; i++)
+            for (int j = -(brushRelativeMin); j < brushRelativeMax; j++)
             {
-                for (int k = -7; k < 8; k++)
+                for (int k = -(brushRelativeMin); k < brushRelativeMax; k++)
                 {
-                    int pixelLocation = trajectoryLocation + ((imageWidth * k) + i);
-                    pixels[pixelLocation].value = Convert.ToByte(COLOR_CLEAR);
-                    pixels[pixelLocation].selected = true;
+                    int pixelLocation = trajectoryLocation + ((imageWidth * j) + k);
+                    if (!pixels[pixelLocation].selected) {
+                        pixels[pixelLocation].value = Convert.ToByte(COLOR_CLEAR);
+                        pixels[pixelLocation].selected = true;
+                    }
                 }
             }
         }
+
         private double getAverageValue(int sizeofbuffer)
         {
             double avg = 0;
@@ -132,7 +123,7 @@ namespace sharpclean
 
         private pixel[] pixels = null;
         private command cmd = new command();
-        private int imageWidth, totalPixels, imageHeight;
+        private int imageWidth, totalPixels, imageHeight, brushRelativeMin, brushRelativeMax;
         private List<int> buffer = new List<int>();
         private List<int> perimeter = new List<int>();
         private List<objectData> objdat = new List<objectData>();
