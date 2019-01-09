@@ -63,19 +63,6 @@ namespace sharpclean
         }
     };
 
-    //same deal, different use
-    class neighbor
-    {
-        public readonly int tl = 0;
-        public readonly int t = 1;
-        public readonly int tr = 2;
-        public readonly int l = 3;
-        public readonly int r = 4;
-        public readonly int bl = 5;
-        public readonly int b = 6;
-        public readonly int br = 7;
-    };
-
     //confidence class
     public class conf
     {

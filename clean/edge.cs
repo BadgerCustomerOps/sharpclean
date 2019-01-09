@@ -21,7 +21,6 @@ namespace sharpclean
         {
             sel = null;
             per = null;
-            edg = null;
             numEdges = 0;
             tolerance = 0;
             perimSize = 0;
@@ -50,11 +49,11 @@ namespace sharpclean
             {
                 int id = stack[stack.Count - 1];
                 stack.RemoveAt(stack.Count - 1);
-                getOctan(id);
+                checkneighbors(getOctan(id), id);
             }
         }
 
-        private void getOctan(int id)
+        private octan getOctan(int id)
         {
             octan oct = new octan();
             if ((id - width) > 0)
@@ -77,105 +76,90 @@ namespace sharpclean
                 oct.br = tree.findNode(sel, id + width + 1);
             }
 
+            return oct;
+        }
+        private void checkneighbors(octan oct, int id)
+        {
             if ((id - width) > 0)
             { //read: "check if top left is an edge"
-                check(oct.tl, oct.t, oct.l, n.tl);
-                check(oct.t, oct.tl, oct.tr, n.t);
-                check(oct.tr, oct.t, oct.r, n.tr);
+                check(oct.tl, oct.t, oct.l, field.tl);
+                check(oct.t, oct.tl, oct.tr, field.t);
+                check(oct.tr, oct.t, oct.r, field.tr);
             }
 
             if (id % width != 0)
-                check(oct.l, oct.tl, oct.bl, n.l);
+                check(oct.l, oct.tl, oct.bl, field.l);
 
             if ((id + 1) % width != 0)
-                check(oct.r, oct.tr, oct.br, n.r);
+                check(oct.r, oct.tr, oct.br, field.r);
 
             if ((id + width) < total)
             {
-                check(oct.bl, oct.l, oct.b, n.bl);
-                check(oct.b, oct.bl, oct.br, n.b);
-                check(oct.br, oct.b, oct.r, n.br);
+                check(oct.bl, oct.l, oct.b, field.bl);
+                check(oct.b, oct.bl, oct.br, field.b);
+                check(oct.br, oct.b, oct.r, field.br);
             }
         }
 
-        private void check(int p, int p1, int p2, int mneighbor)
+        private void check(int centerpixel, int neigh1, int neigh2, field dir)
         {
-            if (p != -1 && !(p1 != -1 && p2 != -1))
+            if (centerpixel != -1 && !(neigh1 != -1 && neigh2 != -1))
             {
-                if (tree.insert(ref per, p))
+                if (tree.insert(ref per, centerpixel))
                 {
-                    stack.Add(p);
-                    perimeter.Add(p);
-                    perimSize++;
-
-                    if (!fieldSet)
-                    {
-                        setField(mneighbor);
-                        numEdges++;
-                    }
-                    else
-                    {
-                        tolerance += field[mneighbor];
-                        if (tolerance < -4 || tolerance > 4)
-                        {
-                            tolerance = 0;
-                            numEdges++;
-                            setField(mneighbor);
-                        }
-                    }
+                    addperimeterpixel(centerpixel);
+                    checkfield(dir);
                 }
             }
         }
 
-        private void setField(int mneighbor)
+        private void addperimeterpixel(int p)
         {
-            if (mneighbor == n.t || mneighbor == n.b)
+            stack.Add(p);
+            perimeter.Add(p);
+            perimSize++;
+        }
+
+        private void checkfield(field dir)
+        {
+            if (!fieldSet)
+            {
+                setField(dir);
+                numEdges++;
+            }
+            else
+            {
+                tolerance += curfield[Convert.ToInt32(dir)];
+                if (tolerance < -4 || tolerance > 4)
+                {
+                    tolerance = 0;
+                    numEdges++;
+                    setField(dir);
+                }
+            }
+        }
+
+        private void setField(field dir)
+        {
+            if (dir == field.t || dir == field.b)
             {   //vertical
-                field[n.tl] = -1;
-                field[n.l] = -2;
-                field[n.bl] = -1;
-                field[n.t] = 0;
-                field[n.b] = 0;
-                field[n.tr] = 1;
-                field[n.r] = 2;
-                field[n.br] = 1;
+                curfield = verticalfield;
                 fieldSet = true;
             }
 
-            else if (mneighbor == n.l || mneighbor == n.r)
-            { //horizontal
-                field[n.tl] = -1;
-                field[n.t] = -2;
-                field[n.tr] = -1;
-                field[n.l] = 0;
-                field[n.r] = 0;
-                field[n.bl] = 1;
-                field[n.b] = 2;
-                field[n.br] = 1;
+            else if (dir == field.l || dir == field.r)
+            {   //horizontal
+                curfield = horizontalfield;
                 fieldSet = true;
             }
-            else if (mneighbor == n.tl || mneighbor == n.br)
-            { //leftslant
-                field[n.t] = -1;
-                field[n.tr] = -2;
-                field[n.r] = -1;
-                field[n.tl] = 0;
-                field[n.br] = 0;
-                field[n.l] = 1;
-                field[n.bl] = 2;
-                field[n.b] = 1;
+            else if (dir == field.tl || dir == field.br)
+            {   //leftslant
+                curfield = leftslantfield;
                 fieldSet = true;
             }
             else
-            { //rightslant
-                field[n.l] = -1;
-                field[n.tl] = -2;
-                field[n.t] = -1;
-                field[n.tr] = 0;
-                field[n.bl] = 0;
-                field[n.b] = 1;
-                field[n.br] = 2;
-                field[n.r] = 1;
+            {   //rightslant
+                curfield = rightslantfield;
                 fieldSet = true;
             }
         }
@@ -197,13 +181,44 @@ namespace sharpclean
 
         private node sel = new node();
         private node per = new node();
-        private node edg = new node();
-        private int[] field = new int[8];
+        private int[] curfield = new int[8];
         private bool fieldSet;
         private List<int> perimeter = new List<int>();
         private List<int> stack = new List<int>();
         private int numEdges, perimSize, width, total, tolerance;
-        private neighbor n = new neighbor();
         private readonly string edge_warn = "::EDGE::warning : ";
+
+        //same deal, different use
+        private enum field
+        {
+            tl, t, tr, l, r, bl, b, br
+        };
+
+        #region field declarations
+        private readonly int[] verticalfield =
+        {
+            -1, 0, 1,
+            -2,    2,
+            -1, 0, 1
+        };
+        private readonly int[] horizontalfield =
+{
+            -1, -2, -1,
+             0,      0,
+             1,  2,  1
+        };
+        private readonly int[] leftslantfield =
+{
+            0, -1, -2,
+            1,     -1,
+            2,  1,  0
+        };
+        private readonly int[] rightslantfield =
+{
+            -2, -1, 0,
+            -1,     1,
+             0,  1, 2
+        };
+        #endregion
     }
 }
