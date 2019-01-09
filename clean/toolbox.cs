@@ -122,7 +122,6 @@ namespace sharpclean
         }
 
         private pixel[] pixels = null;
-        private command cmd = new command();
         private int imageWidth, totalPixels, imageHeight, brushRelativeMin, brushRelativeMax;
         private List<int> buffer = new List<int>();
         private List<int> perimeter = new List<int>();

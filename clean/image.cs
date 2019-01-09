@@ -124,55 +124,6 @@ namespace sharpclean
             }
         }
 
-        public void printmenu()
-        {
-            if (!dataLoaded) {
-                Console.WriteLine(image_err + "image data not loaded\n");
-                return;
-            }
-
-            int n = 0;
-            if (cmd.getcmd("[1]print all, [2]image data menu, [q]quit - ", ref n, 1))
-            {
-                switch (n) {
-                    case 1: print(); break;
-                    case 2: printChoice(); break;
-                }
-            }
-        }
-
-        private void print()
-        {
-            for (int i = 0; i < mdata.totalpixels; i++)
-                Console.WriteLine((Convert.ToChar(pixels[i].value) + " ").PadRight(4));
-        }
-
-        private void printChoice()
-        {
-            int n = 0;
-            if (cmd.getcmd("[1]all [2]file type, [3]dimensions, [4]total pixels, [5]max grey value - ", ref n, 2))
-                print(n - 1);
-        }
-
-        private void print(int i)
-        {
-            switch (i)
-            {
-                case 0:
-                    {
-                        print(Convert.ToInt16(info.FILETYPE));
-                        print(Convert.ToInt16(info.DIMENSIONS));
-                        print(Convert.ToInt16(info.TOTALPIXELS));
-                        print(Convert.ToInt16(info.MAXGREYVAL));
-                        break;
-                    }
-                case 1: Console.WriteLine("file type: " + mdata.filetype + "\n"); break;
-                case 2: Console.WriteLine("width: %i, height: %i\n", mdata.width, mdata.height); break;
-                case 3: Console.WriteLine("total pixels: %i\n", mdata.totalpixels); break;
-                case 4: Console.WriteLine("max grey value: %i\n", mdata.maxgreyval); break;
-            }
-        }
-
         public pixel[] getpixels()
         {
             return pixels;
@@ -191,7 +142,6 @@ namespace sharpclean
         private bool dataLoaded = false;
         private data mdata;
         private pixel[] pixels;
-        private command cmd = new command();
         private readonly string image_err = "::IMAGE::error : ";
     }
 }
