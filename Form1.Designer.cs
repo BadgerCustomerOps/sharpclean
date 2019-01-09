@@ -89,6 +89,7 @@
             this.button4.TabIndex = 3;
             this.button4.Text = "Save Data";
             this.button4.UseVisualStyleBackColor = true;
+            this.button4.Visible = false;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
             // button5
@@ -204,6 +205,7 @@
             this.button7.TabIndex = 14;
             this.button7.Text = "Enable Eagle Eye";
             this.button7.UseVisualStyleBackColor = true;
+            this.button7.Visible = false;
             this.button7.Click += new System.EventHandler(this.button7_Click);
             // 
             // Form1
