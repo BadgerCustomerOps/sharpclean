@@ -50,16 +50,16 @@ namespace sharpclean
                 {
                     buffer = s.Buffer;
                     perimeter = s.Perimeter;
-                    objectData dat = new objectData(getAverageValue(buffer.Count), buffer.Count, buffer.Count / s.getEdges());
+                    objectData dat = new objectData(getAverageValue(buffer.Count), buffer.Count, buffer.Count / s.getedges());
                     conf c = confidence.getconfidence(dat);
                     dat.objconf = c;
                     objdat.Add(dat);
 
-                    if (!c.isObj)
+                    if (!c.isStructure)
                         colorbuffer(COLOR_CLEAR, buffer.Count);
 
                 }
-                s.clearBuffer();
+                s.clearbuffer();
                 buffer.Clear();
             }
         }

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
  * Author: Austin Herman
  */
 
+
 namespace sharpclean
 {
     //the .pgm file's basic data
@@ -19,12 +20,6 @@ namespace sharpclean
         public int totalpixels;
     };
 
-    //used for the menu's when the user selects to print certain data
-    enum info
-    {
-        ALL, FILETYPE, DIMENSIONS, TOTALPIXELS, MAXGREYVAL
-    };
-
     //a basic pixel class
     struct pixel
     {
@@ -33,6 +28,27 @@ namespace sharpclean
         public byte value;      //grey value
         public int id;          //ID [0->totalpixels]
     };
+    
+    static class constants
+    {
+        public const byte VALUE_THRESHOLD = 255;    //a useful threshold for pixel values (white)
+        public const int MAX_OBJECT_SIZE_ESTIMATE = 2700;    //if an object is bigger than this ignore it -- optimization thing
+    }
+
+    //each pixel has eight neighbors
+    class octan
+    {
+        public int tl = -1, t = -1, tr = -1,
+                   l = -1,          r = -1,
+                   bl = -1, b = -1, br = -1;
+
+        public octan()
+        {
+            tl = -1; t = -1; tr = -1;
+            l = -1;          r = -1;
+            bl = -1; b = -1; br = -1;
+        }
+    };
 
     //edge and filler use this for navigation around the pixel map
     enum direction
@@ -40,37 +56,11 @@ namespace sharpclean
         none, up, down, left, right
     };
 
-    //same deal, a little more abstract
-    class pathDirection
+    class path
     {
         public direction dir = direction.none;
         public int id = -1;
-        public pathDirection(direction d, int i) { dir = d; id = i; }
-    };
-
-    //each pixel has eight neighbors
-    class octan
-    {
-        public int tl = -1, t = -1, tr = -1,
-                   l = -1, r = -1,
-                   bl = -1, b = -1, br = -1;
-
-        public octan()
-        {
-            tl = -1; t = -1; tr = -1;
-            l = -1; r = -1;
-            bl = -1; b = -1; br = -1;
-        }
-    };
-
-    //confidence class
-    public class conf
-    {
-        public double obj = 0.0, dust = 0.0,
-                        o_size = 0.0, d_size = 0.0,
-                        o_edge = 0.0, d_edge = 0.0,
-                        o_val = 0.0, d_val = 0.0;
-        public bool isObj;
+        public path(direction d, int i) { dir = d; id = i; }
     };
 
     public class objectData
@@ -88,11 +78,56 @@ namespace sharpclean
         public conf objconf;
     }
 
-    //for building the tree
+    public class conf
+    {
+        public double structure = 0.0, dust = 0.0,
+                        s_size = 0.0, d_size = 0.0,
+                        s_edge = 0.0, d_edge = 0.0,
+                        s_val = 0.0, d_val = 0.0;
+        public bool isStructure;
+    };
+
+    //simply stores two integers in one structure
     class tup
     {
         public int s, e;
         public tup(int st, int en) { s = st; e = en; }
         public void change(int st, int en) { s = st; e = en; }
     };
+
+    public enum field
+    {
+        tl, t, tr,
+        l,      r,
+        bl, b, br
+    };
+
+    public static class fieldvector
+    {
+        public static readonly int[] verticalfield =
+        {
+            -1, 0, 1,
+            -2,    2,
+            -1, 0, 1
+        };
+        public static readonly int[] horizontalfield =
+        {
+            -1, -2, -1,
+             0,      0,
+             1,  2,  1
+        };
+        public static readonly int[] leftslantfield =
+        {
+            0, -1, -2,
+            1,     -1,
+            2,  1,  0
+        };
+        public static readonly int[] rightslantfield =
+        {
+            -2, -1, 0,
+            -1,     1,
+             0,  1, 2
+        };
+    }
+
 }

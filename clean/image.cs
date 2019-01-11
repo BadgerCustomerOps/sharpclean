@@ -16,11 +16,11 @@ namespace sharpclean
     {
         public bool load(string filename)
         {
-            System.IO.StreamReader infile = null;
+            StreamReader infile = null;
             try {
-                infile = new System.IO.StreamReader(filename, Encoding.UTF7);
+                infile = new StreamReader(filename, Encoding.UTF7);
             }
-            catch (System.IO.FileNotFoundException) {
+            catch (FileNotFoundException) {
                 Console.WriteLine(image_err + "could not open file: " + filename + "\n");
                 return false;
             }
@@ -92,7 +92,8 @@ namespace sharpclean
             }
 
         }
-        private void loadP2(System.IO.StreamReader f)
+
+        private void loadP2(StreamReader f)
         {
             pixels = new pixel[mdata.totalpixels];
             string line;
@@ -108,7 +109,7 @@ namespace sharpclean
             }
         }
 
-        private void loadP5(System.IO.StreamReader f)
+        private void loadP5(StreamReader f)
         {
             pixels = new pixel[mdata.totalpixels];
             char[] buffer = new char[mdata.totalpixels];

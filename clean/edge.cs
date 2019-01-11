@@ -143,23 +143,23 @@ namespace sharpclean
         {
             if (dir == field.t || dir == field.b)
             {   //vertical
-                curfield = verticalfield;
+                curfield = fieldvector.verticalfield;
                 fieldSet = true;
             }
 
             else if (dir == field.l || dir == field.r)
             {   //horizontal
-                curfield = horizontalfield;
+                curfield = fieldvector.horizontalfield;
                 fieldSet = true;
             }
             else if (dir == field.tl || dir == field.br)
             {   //leftslant
-                curfield = leftslantfield;
+                curfield = fieldvector.leftslantfield;
                 fieldSet = true;
             }
             else
             {   //rightslant
-                curfield = rightslantfield;
+                curfield = fieldvector.rightslantfield;
                 fieldSet = true;
             }
         }
@@ -187,38 +187,5 @@ namespace sharpclean
         private List<int> stack = new List<int>();
         private int numEdges, perimSize, width, total, tolerance;
         private readonly string edge_warn = "::EDGE::warning : ";
-
-        //same deal, different use
-        private enum field
-        {
-            tl, t, tr, l, r, bl, b, br
-        };
-
-        #region field declarations
-        private readonly int[] verticalfield =
-        {
-            -1, 0, 1,
-            -2,    2,
-            -1, 0, 1
-        };
-        private readonly int[] horizontalfield =
-{
-            -1, -2, -1,
-             0,      0,
-             1,  2,  1
-        };
-        private readonly int[] leftslantfield =
-{
-            0, -1, -2,
-            1,     -1,
-            2,  1,  0
-        };
-        private readonly int[] rightslantfield =
-{
-            -2, -1, 0,
-            -1,     1,
-             0,  1, 2
-        };
-        #endregion
     }
 }
