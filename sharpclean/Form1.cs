@@ -243,17 +243,17 @@ namespace sharpclean
             List<objectData> data = tBox.getObjectData();
 
             // Write the file header
-            csvfile.WriteLine("val, size, edge, dust, obj, res, type, c avg, c edge, c size");
+            csvfile.WriteLine("val, size, edge, dust, struc, res, type, c avg, c edge, c size");
 
             // Iterate through the list and print out the data
             for (int i = 0; i < data.Count; i++)
             {
-                csvfile.Write(data[i].avgval + "," + data[i].size + "," + data[i].edgeratio + "," + data[i].objconf.dust + "," + data[i].objconf.obj + ",");
+                csvfile.Write(data[i].avgval + "," + data[i].size + "," + data[i].edgeratio + "," + data[i].objconf.dust + "," + data[i].objconf.structure + ",");
 
-                if (data[i].objconf.isObj)
-                    csvfile.Write((data[i].objconf.obj - data[i].objconf.dust) + ",obj," + (data[i].objconf.o_val - data[i].objconf.d_val) + "," + (data[i].objconf.o_edge - data[i].objconf.d_edge) + "," + (data[i].objconf.o_size - data[i].objconf.d_size) + "\n");
+                if (data[i].objconf.isStructure)
+                    csvfile.Write((data[i].objconf.structure - data[i].objconf.dust) + ",struc," + (data[i].objconf.s_val - data[i].objconf.d_val) + "," + (data[i].objconf.s_edge - data[i].objconf.d_edge) + "," + (data[i].objconf.s_size - data[i].objconf.d_size) + "\n");
                 else
-                    csvfile.Write((data[i].objconf.dust - data[i].objconf.obj) + ",dust," + (data[i].objconf.d_val - data[i].objconf.o_val) + "," + (data[i].objconf.d_edge - data[i].objconf.o_edge) + "," + (data[i].objconf.d_size - data[i].objconf.o_size) + "\n");
+                    csvfile.Write((data[i].objconf.dust - data[i].objconf.structure) + ",dust," + (data[i].objconf.d_val - data[i].objconf.s_val) + "," + (data[i].objconf.d_edge - data[i].objconf.s_edge) + "," + (data[i].objconf.d_size - data[i].objconf.s_size) + "\n");
             }
 
             csvfile.Close();

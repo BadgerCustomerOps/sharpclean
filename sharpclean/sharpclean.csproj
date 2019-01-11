@@ -49,7 +49,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="clean\command.cs" />
     <Compile Include="clean\confidence.cs" />
     <Compile Include="clean\edge.cs" />
     <Compile Include="fileOps.cs" />
