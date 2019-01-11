@@ -21,11 +21,11 @@ namespace sharpclean
             size(c, d.size);
             edges(c, d.edgeratio);
             c.dust = c.d_edge + c.d_size + c.d_val;
-            c.obj = c.o_edge + c.o_size + c.o_val;
-            if (c.dust > c.obj)
-                c.isObj = false;
+            c.structure = c.s_edge + c.s_size + c.s_val;
+            if (c.dust > c.structure)
+                c.isStructure = false;
             else
-                c.isObj = true;
+                c.isStructure = true;
             return c;
         }
         private static void edges(conf c, double d)
@@ -39,11 +39,11 @@ namespace sharpclean
             else if (d < 90.2) c.d_edge += 1.88;
             else c.d_edge += 1.00;
 
-            if (d < 44.85) c.o_edge += 14.28;
-            else if (d < 66.85) c.o_edge += 29.67;
-            else if (d < 88.85) c.o_edge += 47.36;
-            else if (d < 98.85) c.o_edge += 59.56;
-            else c.o_edge += 95.00;
+            if (d < 44.85) c.s_edge += 14.28;
+            else if (d < 66.85) c.s_edge += 29.67;
+            else if (d < 88.85) c.s_edge += 47.36;
+            else if (d < 98.85) c.s_edge += 59.56;
+            else c.s_edge += 95.00;
         }
 
         private static void size(conf c, double d)
@@ -57,15 +57,15 @@ namespace sharpclean
             else if (d < 2100) c.d_size += 7.00;
             else c.d_size += 1.00;
 
-            if (d < 100) c.o_size += 1.00;
-            else if (d < 897) c.o_size += 10.65;
-            else if (d < 1637) c.o_size += 35.30;
-            else if (d < 2377) c.o_size += 73.23;
-            else if (d < 2757) c.o_size += 90.00;
-            else c.o_size += 99.00;
+            if (d < 100) c.s_size += 1.00;
+            else if (d < 897) c.s_size += 10.65;
+            else if (d < 1637) c.s_size += 35.30;
+            else if (d < 2377) c.s_size += 73.23;
+            else if (d < 2757) c.s_size += 90.00;
+            else c.s_size += 99.00;
 
             c.d_size -= 25;
-            c.o_size -= 25;
+            c.s_size -= 25;
         }
 
         private static void value(conf c, double d)
@@ -80,19 +80,19 @@ namespace sharpclean
             else if (d < 228) c.d_val += 95.32;
             else c.d_val += 99.00;
 
-            if (d < 40) c.o_val += 99.00;
-            else if (d < 70) c.o_val += 75.82;
-            else if (d < 78) c.o_val += 68.82;
-            else if (d < 85) c.o_val += 60.00;
-            else if (d < 93) c.o_val += 53.00;
-            else if (d < 99) c.o_val += 45.05;
-            else if (d < 128) c.o_val += 35.7;
-            else if (d < 157) c.o_val += 20.48;
-            else if (d < 186) c.o_val += 10.59;
-            else c.o_val += 1.00;
+            if (d < 40) c.s_val += 99.00;
+            else if (d < 70) c.s_val += 75.82;
+            else if (d < 78) c.s_val += 68.82;
+            else if (d < 85) c.s_val += 60.00;
+            else if (d < 93) c.s_val += 53.00;
+            else if (d < 99) c.s_val += 45.05;
+            else if (d < 128) c.s_val += 35.7;
+            else if (d < 157) c.s_val += 20.48;
+            else if (d < 186) c.s_val += 10.59;
+            else c.s_val += 1.00;
 
             c.d_val += 15;
-            c.o_val += 15;
+            c.s_val += 15;
         }
     }
 }

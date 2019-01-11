@@ -32,17 +32,39 @@ namespace sharpclean
             rightmost = -1;
             pathSize = 0;
             boundsError = false;
-            getPixels(pixels);
+            p = pixels;
             width = imageWidth;
             total = totalPixels;
         }
 
-        public void getPixels(pixel[] p)
+        public int run(List<int> buffer, int buffersize, node buff)
         {
-            this.p = p;
+            for (int i = 0; i < buffersize; i++)
+                feedBounds(buffer[i]);
+
+            int count = 0;
+            for (int i = 0; i < buffersize; i++)
+            {
+                if (buffer[i] + width < total && !p[buffer[i] + width].selected && p[buffer[i] + width].value >= constants.VALUE_THRESHOLD)
+                {
+                    start(buffer[i] + width);
+                    List<path> whitePixels = getPath();
+                    if (whitePixels.Count != 0)
+                    {
+                        for (int j = 0; j < whitePixels.Count; j++)
+                        {
+                            buffer.Add(whitePixels[j].id);
+                            tree.insert(ref buff, whitePixels[j].id);
+                            count++;
+                        }
+                    }
+                }
+            }
+
+            return count;
         }
 
-        public void getBounds(int id)
+        public void feedBounds(int id)
         {
             if ((id % width) < leftmost) leftmost = id % width;
 
@@ -65,25 +87,27 @@ namespace sharpclean
 
         public void start(int id)
         {
-            path.Clear();
+            curpath.Clear();
             pathSize = 0;
             boundsError = false;
+
             addtoPath(direction.none, id);
-            if (boundsError)
-            {
+            if (boundsError) {
                 clearPath();
                 return;
             }
+
             iteratePath();
         }
 
         private void addtoPath(direction dir, int id)
         {
-            pathDirection pd = new pathDirection(dir, id);
-            if (!inbounds(pd.id)) boundsError = true;
+            if (!inbounds(id))
+                boundsError = true;
             else
             {
-                path.Add(pd);
+                path pd = new path(dir, id);
+                curpath.Add(pd);
                 pathSize++;
                 p[pd.id].selected = true;
             }
@@ -93,7 +117,7 @@ namespace sharpclean
         {
             for (int i = 0; i < pathSize; i++)
             {
-                check(path[i]);
+                check(curpath[i]);
                 if (boundsError)
                 {
                     clearPath();
@@ -102,26 +126,26 @@ namespace sharpclean
             }
         }
 
-        private void check(pathDirection pd)
+        private void check(path pd)
         {
-            if (pd.id < 0)
-                System.Console.WriteLine(pd.id + "\n");
-
             switch (pd.dir) //0 none, 1 up, 2 down, 3 left, 4 right
             {
                 case direction.up:
                     {
                         if (pd.id - width > 0)
                         {
-                            if (!p[pd.id - width].selected && !p[pd.id - width].found) addtoPath(direction.up, pd.id - width); //up
+                            if (!p[pd.id - width].selected && !p[pd.id - width].found)
+                                addtoPath(direction.up, pd.id - width); //up
                         }
                         if (pd.id % width != 0)
                         {
-                            if (!p[pd.id - 1].selected && !p[pd.id - 1].found) addtoPath(direction.left, pd.id - 1);       //left
+                            if (!p[pd.id - 1].selected && !p[pd.id - 1].found)
+                                addtoPath(direction.left, pd.id - 1);   //left
                         }
                         if ((pd.id + 1) % width != 0)
                         {
-                            if (!p[pd.id + 1].selected && !p[pd.id + 1].found) addtoPath(direction.right, pd.id + 1);      //right
+                            if (!p[pd.id + 1].selected && !p[pd.id + 1].found)
+                                addtoPath(direction.right, pd.id + 1);  //right
                         }
                         break;
                     }
@@ -129,15 +153,18 @@ namespace sharpclean
                     {
                         if (pd.id + width < total)
                         {
-                            if (!p[pd.id + width].selected && !p[pd.id + width].found) addtoPath(direction.down, pd.id + width);   //down
+                            if (!p[pd.id + width].selected && !p[pd.id + width].found)
+                                addtoPath(direction.down, pd.id + width);   //down
                         }
                         if (pd.id % width != 0)
                         {
-                            if (!p[pd.id - 1].selected && !p[pd.id - 1].found) addtoPath(direction.left, pd.id - 1);       //left
+                            if (!p[pd.id - 1].selected && !p[pd.id - 1].found)
+                                addtoPath(direction.left, pd.id - 1);   //left
                         }
                         if ((pd.id + 1) % width != 0)
                         {
-                            if (!p[pd.id + 1].selected && !p[pd.id + 1].found) addtoPath(direction.right, pd.id + 1);      //right
+                            if (!p[pd.id + 1].selected && !p[pd.id + 1].found)
+                                addtoPath(direction.right, pd.id + 1);  //right
                         }
                         break;
                     }
@@ -145,15 +172,18 @@ namespace sharpclean
                     {
                         if (pd.id - width > 0)
                         {
-                            if (!p[pd.id - width].selected && !p[pd.id - width].found) addtoPath(direction.up, pd.id - width); //up
+                            if (!p[pd.id - width].selected && !p[pd.id - width].found)
+                                addtoPath(direction.up, pd.id - width); //up
                         }
                         if (pd.id + width < total)
                         {
-                            if (!p[pd.id + width].selected && !p[pd.id + width].found) addtoPath(direction.down, pd.id + width);   //down
+                            if (!p[pd.id + width].selected && !p[pd.id + width].found)
+                                addtoPath(direction.down, pd.id + width);   //down
                         }
                         if (pd.id % width != 0)
                         {
-                            if (!p[pd.id - 1].selected && !p[pd.id - 1].found) addtoPath(direction.left, pd.id - 1);       //left
+                            if (!p[pd.id - 1].selected && !p[pd.id - 1].found)
+                                addtoPath(direction.left, pd.id - 1);   //left
                         }
                         break;
                     }
@@ -161,15 +191,18 @@ namespace sharpclean
                     {
                         if (pd.id - width > 0)
                         {
-                            if (!p[pd.id - width].selected && !p[pd.id - width].found) addtoPath(direction.up, pd.id - width); //up
+                            if (!p[pd.id - width].selected && !p[pd.id - width].found)
+                                addtoPath(direction.up, pd.id - width); //up
                         }
                         if (pd.id + width < total)
                         {
-                            if (!p[pd.id + width].selected && !p[pd.id + width].found) addtoPath(direction.down, pd.id + width);   //down
+                            if (!p[pd.id + width].selected && !p[pd.id + width].found)
+                                addtoPath(direction.down, pd.id + width);   //down
                         }
                         if ((pd.id + 1) % width != 0)
                         {
-                            if (!p[pd.id + 1].selected && !p[pd.id + 1].found) addtoPath(direction.right, pd.id + 1);      //right
+                            if (!p[pd.id + 1].selected && !p[pd.id + 1].found)
+                                addtoPath(direction.right, pd.id + 1);  //right
                         }
                         break;
                     }
@@ -177,23 +210,33 @@ namespace sharpclean
                     {
                         if (pd.id - width > 0)
                         {
-                            if (!p[pd.id - width].selected && !p[pd.id - width].found) addtoPath(direction.up, pd.id - width); //up
+                            if (!p[pd.id - width].selected && !p[pd.id - width].found)
+                                addtoPath(direction.up, pd.id - width); //up
                         }
                         if (pd.id + width < total)
                         {
-                            if (!p[pd.id + width].selected && !p[pd.id + width].found) addtoPath(direction.down, pd.id + width);   //down
+                            if (!p[pd.id + width].selected && !p[pd.id + width].found)
+                                addtoPath(direction.down, pd.id + width);   //down
                         }
                         if (pd.id % width != 0)
                         {
-                            if (!p[pd.id - 1].selected && !p[pd.id - 1].found) addtoPath(direction.left, pd.id - 1);       //left
+                            if (!p[pd.id - 1].selected && !p[pd.id - 1].found)
+                                addtoPath(direction.left, pd.id - 1);   //left
                         }
                         if ((pd.id + 1) % width != 0)
                         {
-                            if (!p[pd.id + 1].selected && !p[pd.id + 1].found) addtoPath(direction.right, pd.id + 1);      //right
+                            if (!p[pd.id + 1].selected && !p[pd.id + 1].found)
+                                addtoPath(direction.right, pd.id + 1);  //right
                         }
                         break;
                     }
             }
+        }
+
+        private void clearPath()
+        {
+            curpath.Clear();
+            pathSize = 0;
         }
 
         public void printBounds()
@@ -213,42 +256,15 @@ namespace sharpclean
             System.Console.WriteLine(" b: %i(%i, %i)\n", bottommost, x, y);
         }
 
-        public List<pathDirection> getPath()
+        public List<path> getPath()
         {
-            return path;
-        }
-
-        private void clearPath()
-        {
-            for (int i = 0; i < path.Count; i++)
-            {
-                if (p[path[i].id].value == 255)
-                    p[path[i].id].selected = false;
-                else
-                {
-                    p[path[i].id].found = true;
-                    foundBuffer.Add(path[i].id);
-                }
-            }
-            path.Clear();
-            pathSize = 0;
-        }
-
-        public void clearFoundBuffer()
-        {
-            for (int i = 0; i < foundBuffer.Count; i++)
-            {
-                p[foundBuffer[i]].found = false;
-                p[foundBuffer[i]].selected = false;
-            }
-            foundBuffer.Clear();
+            return curpath;
         }
 
         private pixel[] p;
         private int width, total;
         private int topmost, bottommost, leftmost, rightmost;
-        private List<pathDirection> path = new List<pathDirection>();
-        private List<int> foundBuffer = new List<int>();
+        private List<path> curpath = new List<path>();
         private int pathSize;
         private bool boundsError;
         private readonly string filler_warn = "::FILLER::warning : ";
