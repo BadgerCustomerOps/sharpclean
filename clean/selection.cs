@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace sharpclean
 {
-    class selection
+    public class selection
     {
         selection()
         {
@@ -119,8 +119,8 @@ namespace sharpclean
 
         public ref List<int> Perimeter => ref perimeter;
 
-        private pixel[] p;
-        private int width, total;
+        private readonly pixel[] p;
+        private readonly int width, total;
         private List<int> buffer, perimeter;
         private int buffersize, numedges;
         private node buff;

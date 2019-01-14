@@ -21,7 +21,7 @@ namespace sharpclean
     };
 
     //a basic pixel class
-    struct pixel
+    public struct pixel
     {
         public bool selected;   //used for selection
         public bool found;      //used in filler
@@ -31,8 +31,10 @@ namespace sharpclean
     
     static class constants
     {
-        public const byte VALUE_THRESHOLD = 255;    //a useful threshold for pixel values (white)
-        public const int MAX_OBJECT_SIZE_ESTIMATE = 2700;    //if an object is bigger than this ignore it -- optimization thing
+        public const byte VALUE_THRESHOLD = 255;            //a useful threshold for pixel values (white)
+        public const int MAX_OBJECT_SIZE_ESTIMATE = 2700;   //if an object is bigger than this ignore it -- optimization thing
+        public const int COLOR_CLEAR = 255;              //color to clear selections with
+        public const int BRUSH_SIZE = 16;                //brush size for trajectory path
     }
 
     //each pixel has eight neighbors
@@ -85,6 +87,14 @@ namespace sharpclean
                         s_edge = 0.0, d_edge = 0.0,
                         s_val = 0.0, d_val = 0.0;
         public bool isStructure;
+    };
+
+    public class node
+    {
+        public node left, right;
+        public int id;
+        public node() { left = null; right = null; id = -1; }
+        public node(int i) { left = null; right = null; id = i; }
     };
 
     //simply stores two integers in one structure

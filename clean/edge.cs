@@ -13,7 +13,8 @@ namespace sharpclean
 {
     class edge
     {
-        edge() {
+        edge()
+        {
             Console.WriteLine(edge_warn + "edge initialized with no pixels\n");
         }
 
@@ -185,7 +186,8 @@ namespace sharpclean
         private bool fieldSet;
         private List<int> perimeter = new List<int>();
         private List<int> stack = new List<int>();
-        private int numEdges, perimSize, width, total, tolerance;
+        private readonly int width, total;
+        private int numEdges, perimSize, tolerance;
         private readonly string edge_warn = "::EDGE::warning : ";
     }
 }

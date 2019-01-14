@@ -13,34 +13,28 @@ using System.Windows.Forms;
 
 namespace sharpclean
 {
-    class toolbox
+    public class toolbox
     {
-        public readonly int COLOR_CLEAR = 255;
-        public readonly int BRUSH_SIZE = 16;
-
         public toolbox(pixel[] p, int width, int height, int total)
         {
             pixels = p;
             imageWidth = width;
             totalPixels = total;
             imageHeight = height;
-            brushRelativeMin = BRUSH_SIZE / 2 - 1;
-            brushRelativeMax = BRUSH_SIZE / 2;
+            brushMin = - (constants.BRUSH_SIZE / 2 - 1);
+            brushMax = constants.BRUSH_SIZE / 2;
         }
 
-        //gets some info for saving data, then taps run()
-        public void clean(ProgressBar progressBar1)
+        //the big boy, iterates through the pixels and drives algorithms
+        public void run(ProgressBar progressBar1)
         {
-            if (pixels == null) {
+            if (pixels == null)
+            {
                 MessageBox.Show("No Pixels Loaded", "no pixels", 0);
                 return;
             }
             run(progressBar1);
-        }
 
-        //the big boy, iterates through the pixels and drives algorithms
-        private void run(ProgressBar progressBar1)
-        {
             selection s = new selection(pixels, imageWidth, totalPixels);
             for (int i = 0; i < totalPixels; i++)
             {
@@ -50,13 +44,13 @@ namespace sharpclean
                 {
                     buffer = s.Buffer;
                     perimeter = s.Perimeter;
-                    objectData dat = new objectData(getAverageValue(buffer.Count), buffer.Count, buffer.Count / s.getedges());
+                    objectData dat = new objectData(getAverageValue(), buffer.Count, buffer.Count / s.getedges());
                     conf c = confidence.getconfidence(dat);
                     dat.objconf = c;
                     objdat.Add(dat);
 
                     if (!c.isStructure)
-                        colorbuffer(COLOR_CLEAR, buffer.Count);
+                        colorbuffer(constants.COLOR_CLEAR);
 
                 }
                 s.clearbuffer();
@@ -65,21 +59,21 @@ namespace sharpclean
         }
 
         //colors a selection of pixels
-        private void colorbuffer(int color, int sizeofbuffer)
+        private void colorbuffer(int color)
         {
-            for (int i = 0; i < sizeofbuffer; i++)
+            for (int i = 0; i < buffer.Count; i++)
                 pixels[buffer[i]].value = Convert.ToByte(color);
         }
 
         //colors the edges of a selection of pixels
-        private void coloredges(int color, int sizeofperimeter)
+        private void coloredges(int color)
         {
-            for (int i = 0; i < sizeofperimeter; i++)
+            for (int i = 0; i < perimeter.Count; i++)
                 pixels[perimeter[i]].value = Convert.ToByte(color);
         }
 
         // debugging funciton to look at the walk path
-        public void PrintWalkPath(fileOps mapCleanup)
+        public void printWalkPath(fileOps mapCleanup)
         {
             for (int i = 0; i < mapCleanup.walkPath.Count(); ++i)
                 Console.WriteLine("x: " +  mapCleanup.walkPath[i].x.ToString() + " y: " + mapCleanup.walkPath[i].y.ToString()); 
@@ -89,31 +83,31 @@ namespace sharpclean
         public void removeDebris(fileOps mapCleanup)
         {
             for (int i = 0; i < mapCleanup.walkPath.Count(); i++)
-                Brush(((imageHeight - mapCleanup.walkPath[i].y - 1) * imageWidth) + mapCleanup.walkPath[i].x);
+                brush(((imageHeight - mapCleanup.walkPath[i].y - 1) * imageWidth) + mapCleanup.walkPath[i].x);
         }
 
         // changes the color of the pixels and sets the touch value
-        private void Brush(int trajectoryLocation)
+        private void brush(int trajectoryLocation)
         {
-            for (int j = -(brushRelativeMin); j < brushRelativeMax; j++)
+            for (int j = brushMin; j < brushMax; j++)
             {
-                for (int k = -(brushRelativeMin); k < brushRelativeMax; k++)
+                for (int k = brushMin; k < brushMax; k++)
                 {
                     int pixelLocation = trajectoryLocation + ((imageWidth * j) + k);
                     if (!pixels[pixelLocation].selected) {
-                        pixels[pixelLocation].value = Convert.ToByte(COLOR_CLEAR);
+                        pixels[pixelLocation].value = Convert.ToByte(constants.COLOR_CLEAR);
                         pixels[pixelLocation].selected = true;
                     }
                 }
             }
         }
 
-        private double getAverageValue(int sizeofbuffer)
+        private double getAverageValue()
         {
             double avg = 0;
-            for (int i = 0; i < sizeofbuffer; i++)
+            for (int i = 0; i < buffer.Count; i++)
                 avg += pixels[buffer[i]].value;
-            return avg / sizeofbuffer;
+            return avg / buffer.Count;
         }
 
         public List<objectData> getObjectData()
@@ -122,7 +116,7 @@ namespace sharpclean
         }
 
         private pixel[] pixels = null;
-        private int imageWidth, totalPixels, imageHeight, brushRelativeMin, brushRelativeMax;
+        private readonly int imageWidth, totalPixels, imageHeight, brushMin, brushMax;
         private List<int> buffer = new List<int>();
         private List<int> perimeter = new List<int>();
         private List<objectData> objdat = new List<objectData>();

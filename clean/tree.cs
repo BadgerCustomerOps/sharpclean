@@ -11,44 +11,36 @@ using System.Threading.Tasks;
 
 namespace sharpclean
 {
-    public class node
-    {
-        public node left, right;
-        public int id;
-        public node() { left = null; right = null; id = -1; }
-        public node(int i) { left = null; right = null; id = i; }
-    };
-
     public static class tree
     {
-        public static bool insert(ref node n, int i)
+        public static bool insert(ref node n, int id)
         {
             if (n == null)
             {
-                n = new node(i);
+                n = new node(id);
                 return true;
             }
             node r = n;
             while (n != null)
             {
-                if (i < n.id)
+                if (id < n.id)
                 {
                     if (n.left != null)
                         n = n.left;
                     else
                     {
-                        n.left = new node(i);
+                        n.left = new node(id);
                         n = r;
                         return true;
                     }
                 }
-                else if (i > n.id)
+                else if (id > n.id)
                 {
                     if (n.right != null)
                         n = n.right;
                     else
                     {
-                        n.right = new node(i);
+                        n.right = new node(id);
                         n = r;
                         return true;
                     }

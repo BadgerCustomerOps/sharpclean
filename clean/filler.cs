@@ -262,7 +262,7 @@ namespace sharpclean
         }
 
         private pixel[] p;
-        private int width, total;
+        private readonly int width, total;
         private int topmost, bottommost, leftmost, rightmost;
         private List<path> curpath = new List<path>();
         private int pathSize;
