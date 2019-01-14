@@ -177,7 +177,7 @@ namespace sharpclean
                     tBox.removeDebris(mapCleanup);
 
                 // Update the progress bar as the cleaning is performed
-                tBox.clean(progressBar1);
+                tBox.run(progressBar1);
 
                 // Create a path to temporary cleaned .pgm file
                 this.tempPGMPath = mapCleanup.getDir() + "\\" + "temp2.pgm";
