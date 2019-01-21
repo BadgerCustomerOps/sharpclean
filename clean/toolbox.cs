@@ -33,7 +33,6 @@ namespace sharpclean
                 MessageBox.Show("No Pixels Loaded", "no pixels", 0);
                 return;
             }
-            run(progressBar1);
 
             selection s = new selection(pixels, imageWidth, totalPixels);
             for (int i = 0; i < totalPixels; i++)
