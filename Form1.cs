@@ -227,7 +227,7 @@ namespace sharpclean
             {
                 // Write the file, notify the user, and allow the user to open the original file in GIMP
                 img.write(fileSaveName);
-                MessageBox.Show("File sucessfully saved!", "File Saved", 0);
+                MessageBox.Show("File successfully saved!", "File Saved", 0);
                 button6.Enabled = true;
             }
             catch
