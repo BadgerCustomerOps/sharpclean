@@ -1,4 +1,4 @@
-# sharpclean
+# SharpClean
 
 SharpClean is an application developed by the Badger Technologies Customer Ops team namely: 
 Austin Herman, Joey Harrison, Brent Honaker, and Jair Ramirez
